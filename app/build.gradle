@@ -1,0 +1,275 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
+
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
+android {
+    compileSdk 36
+    defaultConfig {
+        applicationId "com.altem1.ukilist"
+        minSdkVersion 26
+        targetSdkVersion 36
+        versionCode 240
+        versionName "1.1.0"
+        multiDexEnabled true
+        buildConfigField "String", "ANILIST_CLIENT_ID", "\"${localProperties['ANILIST_CLIENT_ID'] ?: ""}\""
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+    signingConfigs {
+        // Keystore propio de UkiList: keys.keystore y sus contraseñas en local.properties (ambos fuera de git).
+        release {
+            if (localProperties['UKILIST_STORE_FILE']) {
+                storeFile rootProject.file(localProperties['UKILIST_STORE_FILE'])
+                storePassword localProperties['UKILIST_STORE_PWD']
+                keyAlias localProperties['UKILIST_KEY_ALIAS']
+                keyPassword localProperties['UKILIST_KEY_PWD']
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            manifestPlaceholders.admobID = localProperties['UKIKU_ADMOB_ID'] ?: ""
+            buildConfigField "String", "IAB_KEY", localProperties['APPCOINS_IAB_KEY'] ?: ""
+            buildConfigField "String", "IAB_UPDATE_ACTION", localProperties['APPCOINS_IAB_UPDATE_ACTION'] ?: ""
+            buildConfigField "String", "IAB_BIND_ACTION", localProperties['APPCOINS_DEV_IAB_BIND_ACTION'] ?: ""
+            buildConfigField "String", "IAB_BIND_PACKAGE", localProperties['APPCOINS_DEV_IAB_BIND_PACKAGE'] ?: ""
+            buildConfigField "String", "APPCOINS_ADDRESS", localProperties['APPCOINS_ADDRESS'] ?: ""
+            buildConfigField "String", "DROPBOX_TOKEN", localProperties['DROPBOX_TOKEN'] ?: ""
+            buildConfigField "String", "EASTER_SEARCH", localProperties['EASTER_SEARCH'] ?: ""
+            buildConfigField "String", "CIPHER_PWD_12", localProperties['UKIKU_PWD_12'] ?: ""
+            buildConfigField "String", "CIPHER_PWD_16", localProperties['UKIKU_PWD_16'] ?: ""
+            buildConfigField "String", "CIPHER_PWD_32", localProperties['UKIKU_PWD_32'] ?: ""
+            buildConfigField "String", "ADM_FILE", localProperties['UKIKU_ADM_FILE'] ?: ""
+            buildConfigField "String", "APPODEAL_KEY", localProperties['UKIKU_APPODEAL_KEY'] ?: ""
+            resValue "string", "twitter_consumer_key", localProperties['UKIKU_TWITTER_API_KEY'] ?: ""
+            resValue "string", "twitter_consumer_secret", localProperties['UKIKU_TWITTER_API_SECRET'] ?: ""
+        }
+        release {
+            if (localProperties['UKILIST_STORE_FILE']) signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-android.txt'
+            manifestPlaceholders.admobID = localProperties['UKIKU_ADMOB_ID'] ?: ""
+            buildConfigField "String", "IAB_KEY", localProperties['APPCOINS_IAB_KEY'] ?: ""
+            buildConfigField "String", "IAB_UPDATE_ACTION", localProperties['APPCOINS_IAB_UPDATE_ACTION'] ?: ""
+            buildConfigField "String", "IAB_BIND_ACTION", localProperties['APPCOINS_DEV_IAB_BIND_ACTION'] ?: ""
+            buildConfigField "String", "IAB_BIND_PACKAGE", localProperties['APPCOINS_DEV_IAB_BIND_PACKAGE'] ?: ""
+            buildConfigField "String", "APPCOINS_ADDRESS", localProperties['APPCOINS_ADDRESS'] ?: ""
+            buildConfigField "String", "DROPBOX_TOKEN", localProperties['DROPBOX_TOKEN'] ?: ""
+            buildConfigField "String", "EASTER_SEARCH", localProperties['EASTER_SEARCH'] ?: ""
+            buildConfigField "String", "CIPHER_PWD_12", localProperties['UKIKU_PWD_12'] ?: ""
+            buildConfigField "String", "CIPHER_PWD_16", localProperties['UKIKU_PWD_16'] ?: ""
+            buildConfigField "String", "CIPHER_PWD_32", localProperties['UKIKU_PWD_32'] ?: ""
+            buildConfigField "String", "ADM_FILE", localProperties['UKIKU_ADM_FILE'] ?: ""
+            buildConfigField "String", "APPODEAL_KEY", localProperties['UKIKU_APPODEAL_KEY'] ?: ""
+            resValue "string", "twitter_consumer_key", localProperties['UKIKU_TWITTER_API_KEY'] ?: ""
+            resValue "string", "twitter_consumer_secret", localProperties['UKIKU_TWITTER_API_SECRET'] ?: ""
+        }
+        tv {
+            initWith release
+            applicationIdSuffix ".tv"
+            matchingFallbacks = ['release']
+        }
+        playstore {
+            initWith release
+            matchingFallbacks = ['release']
+        }
+        amazon {
+            initWith release
+            matchingFallbacks = ['release']
+        }
+    }
+    sourceSets {
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
+    buildFeatures {
+        viewBinding = true
+    }
+    compileOptions {
+        sourceCompatibility = '17'
+        targetCompatibility = '17'
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    packagingOptions {
+        resources {
+            excludes += ['AndroidManifest.xml']
+            excludes += ['META-INF/versions/9/OSGI-INF/MANIFEST.MF']
+        }
+    }
+    namespace 'knf.kuma'
+}
+
+configurations.all {
+    resolutionStrategy { 
+        force 'org.jsoup:jsoup:1.10.3'
+        //force 'androidx.core:core-ktx:1.6.0'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        google()
+        mavenCentral()
+        //jcenter()
+        maven { url "https://jitpack.io" }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
+        maven { url "https://dl.bintray.com/drummer-aidan/maven/" }
+        maven { url "https://dl.bintray.com/blockchainds/bds" }
+        maven { url "https://dl.bintray.com/asf/asf" }
+    }
+}
+
+dependencies {
+    //implementation project(path:':multidisplaycast', configuration:'default')
+    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+    implementation 'com.github.jordyamc:Multi-Display-Cast:2.20'
+    implementation 'com.github.jordyamc:PersistentSearchView:1.0.10'
+    implementation 'com.github.jordyamc:UAGenerator:1.2.2'
+    implementation 'com.github.jordyamc:AndroidVideoCache:2.7.6'
+    implementation 'com.github.jordyamc:Cloudflare-Bypasser:1.0.26'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.browser:browser:1.5.0' //Keep
+    implementation 'androidx.security:security-crypto:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.10.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.10.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0'
+    implementation 'androidx.activity:activity-ktx:1.7.2' //Keep
+    implementation 'androidx.fragment:fragment-ktx:1.8.9'
+    implementation 'androidx.startup:startup-runtime:1.2.0'
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'androidx.vectordrawable:vectordrawable-animated:1.2.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.mediarouter:mediarouter:1.4.0' //Keep
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    implementation 'androidx.leanback:leanback:1.2.0'
+    implementation 'androidx.leanback:leanback-paging:1.1.0'
+    implementation 'androidx.tvprovider:tvprovider:1.1.0'
+    implementation 'androidx.palette:palette-ktx:1.0.0'
+    implementation 'com.google.android.gms:play-services-cast:22.2.0'
+    implementation platform('com.google.firebase:firebase-bom:34.7.0')
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.android.gms:play-services-auth:20.5.0' //Keep
+    //implementation 'com.google.ads.mediation:adcolony:4.4.1.0'
+    implementation 'com.firebaseui:firebase-ui-auth:9.1.1'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.2'
+    implementation 'io.reactivex.rxjava3:rxjava:3.1.12'
+    implementation 'com.google.android.gms:play-services-maps:19.2.0'
+    api 'com.google.guava:guava:33.5.0-android'
+    implementation 'androidx.annotation:annotation:1.9.1'
+    implementation 'androidx.slice:slice-builders-ktx:1.0.0-alpha08'
+    implementation 'androidx.slice:slice-builders:1.0.0'
+    implementation 'androidx.work:work-runtime-ktx:2.11.0'
+    implementation 'androidx.room:room-runtime:2.8.4'
+    implementation 'androidx.room:room-ktx:2.8.4'
+    implementation 'androidx.room:room-paging:2.8.4'
+    kapt 'androidx.room:room-compiler:2.8.4'
+    androidTestImplementation 'androidx.room:room-testing:2.8.4'
+    implementation 'com.google.dagger:dagger-android-support:2.57.2'
+    kapt 'com.google.dagger:dagger-android-processor:2.57.2'
+    implementation 'androidx.paging:paging-runtime-ktx:3.3.6'
+    implementation 'pl.droidsonroids:jspoon:1.3.3'
+    implementation 'pl.droidsonroids.retrofit2:converter-jspoon:1.3.2'
+    implementation 'org.jsoup:jsoup:1.13.1' //Keep
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:3.0.0'
+    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
+    implementation 'com.squareup.okhttp3:okhttp-dnsoverhttps:5.3.2'
+    implementation 'com.github.jordyamc:ChipsLayoutManager:0.5.3'
+    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'me.zhanghai.android.materialratingbar:library:1.4.0'
+    implementation 'at.blogc:expandabletextview:1.0.5'
+    implementation 'androidx.media3:media3-transformer:1.10.1'
+    implementation 'androidx.media3:media3-common:1.10.1'
+    implementation 'androidx.media3:media3-session:1.10.1'
+    implementation 'androidx.media3:media3-ui:1.10.1'
+    implementation 'androidx.media3:media3-datasource:1.10.1'
+    implementation 'androidx.media3:media3-ui-leanback:1.10.1'
+    implementation 'androidx.media3:media3-exoplayer:1.10.1'
+    implementation 'androidx.media3:media3-exoplayer-hls:1.10.1'
+
+    //MaterialDialogs
+    implementation 'com.afollestad.material-dialogs:core:3.3.0'
+    implementation 'com.afollestad.material-dialogs:lifecycle:3.3.0'
+    implementation 'com.afollestad.material-dialogs:input:3.3.0'
+    implementation 'com.afollestad.material-dialogs:bottomsheets:3.3.0'
+    //---------
+    implementation 'org.apache.commons:commons-text:1.15.0'
+    implementation 'com.github.MFlisar:DragSelectRecyclerView:0.3'
+    implementation 'com.github.StephenVinouze:MaterialNumberPicker:1.1.0'
+    implementation 'biz.kasual:materialnumberpicker:1.2.1'
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    implementation 'com.github.daniel-stoneuk:material-about-library:3.2.0-rc01'
+    implementation 'io.github.luizgrp.sectionedrecyclerviewadapter:sectionedrecyclerviewadapter:1.2.0'
+    implementation 'nl.dionsegijn:konfetti:1.3.2'
+    implementation 'me.zhanghai.android.materialprogressbar:library:1.6.1'
+    implementation "com.github.tonyofrancis.Fetch:fetch2:3.4.1"
+    implementation "com.github.tonyofrancis.Fetch:fetch2:3.4.1"
+    implementation "com.github.tonyofrancis.Fetch:fetch2rx:3.4.1"
+    implementation "com.github.tonyofrancis.Fetch:fetch2okhttp:3.4.1"
+    implementation 'q.rorbin:badgeview:1.1.3'
+    implementation 'com.jaredrummler:android-device-names:2.1.1'
+    implementation 'com.simplecityapps:recyclerview-fastscroll:2.0.1'
+    implementation 'com.mikhaellopez:circularprogressbar:2.0.0'
+    implementation 'moe.feng:MaterialStepperView:0.2.4.2'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    implementation 'com.github.jordyamc:kprobability:1.0.5'
+    implementation 'org.nield:kotlin-statistics:1.2.1'
+    implementation 'com.github.Jamshid-M:ExactRatingBar:1.0.0'
+    implementation 'com.github.jordyamc:CloudflareBypassWebview:1.0.4'
+    implementation 'com.github.jordyamc:apk-signatures:1.0.3'
+    implementation 'com.github.sephiroth74:android-target-tooltip:2.0.4'
+    implementation 'com.github.jordyamc.oasis-jsbridge-android:oasis-jsbridge-duktape:1.0.2'
+    kapt 'com.github.bumptech.glide:compiler:4.16.0'
+    implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:4.1.2'
+    implementation 'fr.bmartel:jspeedtest:1.32.1'
+    implementation 'com.mani:ThinDownloadManager:1.4.0'
+    implementation 'com.github.simbiose:Encryption:1.4.0'
+    implementation 'com.github.marlonlom:timeago:4.1.0'
+    implementation 'com.scottyab:secure-preferences-lib:0.1.7'
+    implementation 'com.github.florent37:expansionpanel:1.2.2'
+    implementation 'com.github.evgenyneu:js-evaluator-for-android:v5.0.0'
+    implementation project(':dtpv')
+    implementation 'org.conscrypt:conscrypt-android:2.5.3'
+    testImplementation 'junit:junit:4.13.2'
+    //Kotlin
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.1.21'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+    implementation 'org.jetbrains.anko:anko:0.10.8'
+    implementation 'org.jetbrains.anko:anko-coroutines:0.10.8'
+    //------
+    //Moon
+    //implementation 'io.github.darkryh.moongetter:moongetter-core:2.0.0-alpha02'
+    //implementation 'io.github.darkryh.moongetter:moongetter-client-okhttp:2.0.0-alpha02'
+    //implementation 'io.github.darkryh.moongetter:moongetter-client-cookie-java-net:2.0.0-alpha02'
+    //implementation 'io.github.darkryh.moongetter:moongetter-client-trustmanager-java-net:2.0.0-alpha02'
+    //implementation 'io.github.darkryh.moongetter:moongetter-android-robot:2.0.0-alpha02'
+    //
+    //Applovin
+    implementation 'com.google.android.ump:user-messaging-platform:3.1.0'
+    //-------
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.work:work-testing:2.8.1'
+    //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
+}

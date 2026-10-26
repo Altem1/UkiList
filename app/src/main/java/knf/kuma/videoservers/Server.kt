@@ -1,0 +1,151 @@
+package knf.kuma.videoservers
+
+import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.webkit.JavascriptInterface
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import org.jsoup.Connection
+import org.jsoup.Jsoup
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+
+abstract class Server(val context: Context, val baseLink: String) : Comparable<Server> {
+    private var server: VideoServer? = null
+
+    abstract val isValid: Boolean
+
+    abstract val name: String
+
+    abstract val videoServer: VideoServer?
+
+    open val canStream: Boolean = true
+
+    open val canDownload: Boolean = canStream
+
+    val verified: VideoServer?
+        get() {
+            if (server == null)
+                server = verify(videoServer)
+            return server
+        }
+
+    protected suspend fun getFinishedHtml(link: String): String {
+        return suspendCoroutine {
+            WebView(context).apply {
+                settings.apply {
+                    javaScriptEnabled = true
+                }
+                addJavascriptInterface(object : ZippyServer.ZippyJSInterface() {
+                    @JavascriptInterface
+                    override fun printHtml(string: String) {
+                        it.resume(string)
+                    }
+                }, "HtmlViewer")
+                val handler = Handler(Looper.getMainLooper())
+                var isExecuted = false
+                val runnable = Runnable {
+                    if (!isExecuted) {
+                        isExecuted = true
+                        loadUrl(
+                            "javascript:window.HtmlViewer.printHtml" +
+                                    "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');"
+                        )
+                    }
+                }
+                handler.postDelayed(runnable, 5000)
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        handler.removeCallbacks(runnable)
+                        runnable.run()
+                    }
+                }
+                loadUrl(link)
+            }
+        }
+    }
+
+    private fun verify(videoServer: VideoServer?): VideoServer? {
+        if (videoServer == null)
+            return null
+        for (option in ArrayList(videoServer.options))
+            try {
+                check(option.url != null)
+                if (videoServer.skipVerification) continue
+                val request = Jsoup.connect(option.url)
+                    .ignoreHttpErrors(true)
+                    .ignoreContentType(true)
+                    .method(Connection.Method.HEAD).apply {
+                        if (option.headers != null) {
+                            for (pair in option.headers.createHeaders()) {
+                                header(pair.first, pair.second)
+                            }
+                        }
+                    }
+                val response = request.execute()
+                if (response.statusCode() !in 200..300) {
+                    Log.e("Remove Option", "Server: " + option.server + "\nUrl: " + option.url + "\nCode: " + response.statusCode())
+                    videoServer.options.remove(option)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                videoServer.options.remove(option)
+            }
+
+        return if (videoServer.options.isEmpty()) null else videoServer
+    }
+
+    override fun compareTo(other: Server): Int {
+        return name.compareTo(other.name)
+    }
+
+    companion object {
+        const val TIMEOUT = 10000L
+
+        private fun getServers(context: Context, base: String): List<Server> {
+            return listOf(
+                FireServer(context, base),
+                NatsukiServer(context, base),
+                GoCDNServer(context, base),
+                StapeServer(context, base),
+                StreamWishServer(context, base),
+                //SBServer(context, base),
+                VeryStreamServer(context, base),
+                FembedServer(context, base),
+                FenixServer(context, base),
+                HyperionServer(context, base),
+                IzanagiServer(context, base),
+                MangoServer(context, base),
+                MegaServer(context, base),
+                OkruServer(context, base),
+                RVServer(context, base),
+                ZippyServer(context, base),
+                YUServer(context, base),
+                MP4UploadServer(context, base),
+                ZillaServer(context, base),
+                PixelServer(context, base),
+                UPNServer(context, base),
+                FichierServer(context, base),
+                TransferIt(context, base)
+            )
+        }
+
+        fun check(context: Context, base: String): Server? {
+            for (server in getServers(context, base)) {
+                if (server.isValid)
+                    return server
+            }
+            return null
+        }
+
+        fun getNames(servers: MutableList<Server>): MutableList<String> {
+            val names = ArrayList<String>()
+            for (server in servers) {
+                names.add(server.name)
+            }
+            return names
+        }
+    }
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#fff</color>
+    <color name="textWhitePrimary">#000</color>
+
+    <color name="colorPrimary">#282828</color>
+    <color name="colorPrimaryDark">#1b1b1b</color>
+    <color name="divider">#fff</color>
+    <color name="separator">#26FFFFFF</color>
+    <color name="textPrimary">#fff</color>
+    <color name="textSecondaryAlpha">#B2FFFFFF</color>
+    <color name="textSecondaryTitle">#80FFFFFF</color>
+    <color name="textSecondary">#BEBEBE</color>
+
+    <color name="cardview_background">#222222</color>
+    <color name="text_disable">#42ffffff</color>
+
+    <color name="screenBackground">#ff303030</color>
+
+    <color name="color_bottom_line_disabled">#EEEEEE</color>
+</resources>

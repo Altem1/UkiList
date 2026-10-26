@@ -1,0 +1,381 @@
+<resources>
+    <string name="app_name">UKIKU</string>
+    <string name="launcher_name" translatable="false">UkiList</string>
+    <string name="title_activity_main">UKIKU</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="directory_channel_title">Actualizacion de directorio</string>
+
+    <string name="theme_default">3</string>
+
+    <string-array name="theme_options">
+        <item>Automático</item>
+        <item>Dia</item>
+        <item>Noche</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>3</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="storage_type">
+        <item>Memoria interna</item>
+        <item>Tarjeta SD</item>
+    </string-array>
+    <string-array name="storage_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="recents_type">
+        <item>Lista</item>
+        <item>Home</item>
+    </string-array>
+    <string-array name="recents_type_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="recents_options">
+        <item>Nunca</item>
+        <item>15 minutos</item>
+        <item>30 minutos</item>
+        <item>45 minutos</item>
+        <item>60 minutos</item>
+    </string-array>
+    <string-array name="recents_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="timeout_options">
+        <item>10 segundos</item>
+        <item>20 segundos</item>
+        <item>30 segundos</item>
+        <item>Ilimitado</item>
+    </string-array>
+    <string-array name="timeout_values">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>0</item>
+    </string-array>
+    <string-array name="dir_options">
+        <item>Nunca</item>
+        <item>Diario</item>
+        <item>2 dias</item>
+        <item>3 dias</item>
+        <item>4 dias</item>
+        <item>5 dias</item>
+        <item>6 dias</item>
+        <item>Semanalmente</item>
+    </string-array>
+    <string-array name="dir_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+    <string-array name="player_options">
+        <item>Interno</item>
+        <item>Externo</item>
+    </string-array>
+    <string-array name="player_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="layType_options">
+        <item>Lista</item>
+        <item>Cuadrícula</item>
+    </string-array>
+    <string-array name="layType_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="player_resize_options">
+        <item>Ajustar video</item>
+        <item>Llenar pantalla</item>
+        <item>Llenar ancho</item>
+        <item>Llenar largo</item>
+    </string-array>
+    <string-array name="player_resize_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="buffer_size">
+        <item>1kb</item>
+        <item>2kb</item>
+        <item>4kb</item>
+        <item>8kb</item>
+        <item>16kb</item>
+        <item>32kb</item>
+        <item>64kb</item>
+    </string-array>
+    <string-array name="buffer_size_values">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+        <item>16</item>
+        <item>32</item>
+        <item>64</item>
+    </string-array>
+    <string-array name="parallel_count">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="downloader_type">
+        <item>Clásico</item>
+        <item>Multiple</item>
+    </string-array>
+    <string-array name="downloader_type_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="autobackup">
+        <item>Nunca</item>
+        <item>Diariamente</item>
+        <item>Cada 3 días</item>
+        <item>Cada 5 días</item>
+        <item>Semanalmente</item>
+    </string-array>
+    <string-array name="autobackup_values">
+        <item>0</item>
+        <item>1</item>
+        <item>3</item>
+        <item>5</item>
+        <item>7</item>
+    </string-array>
+    <string-array name="savetype_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="savetype">
+        <item>Nombre</item>
+        <item>ID</item>
+    </string-array>
+    <string-array name="list_states">
+        <item>Ninguno</item>
+        <item>Viendo</item>
+        <item>Considerando</item>
+        <item>Completado</item>
+        <item>Dropeado</item>
+        <item>Pausado</item>
+    </string-array>
+    <string name="shortcut_fav_short">Favoritos</string>
+    <string name="shortcut_fav_long">Animes favoritos</string>
+    <string name="shortcut_dir_short">Directorio</string>
+    <string name="shortcut_dir_long">Animes en directorio</string>
+    <string name="shortcut_explorer_short">Explorador</string>
+    <string name="shortcut_explorer_long">Explorador</string>
+    <string name="shortcut_emision_short">Emisión</string>
+    <string name="shortcut_emision_long">Animes en emisión</string>
+    <string name="shortcut_disable_flat">Flat design</string>
+    <string name="shortcut_disable_classic">Classic design</string>
+
+    <string-array name="theme_colors">
+        <item>Rojo</item>
+        <item>Rosa</item>
+        <item>Morado</item>
+        <item>Morado obscuro</item>
+        <item>Indigo</item>
+        <item>Azul</item>
+        <item>Azul claro</item>
+        <item>Cyan</item>
+        <item>Verde azulado</item>
+        <item>Verde</item>
+        <item>Verde claro</item>
+        <item>Lima</item>
+        <item>Amarillo</item>
+        <item>Ambar</item>
+        <item>Naranja</item>
+        <item>Naranja obscuro</item>
+        <item>Café</item>
+        <item>Gris</item>
+        <item>Gris azulado</item>
+    </string-array>
+
+    <string-array name="theme_colors_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+    </string-array>
+
+    <string-array name="design_options">
+        <item>Flat</item>
+        <item>Clasico</item>
+    </string-array>
+    <string-array name="recents_action_options">
+        <item>Streaming</item>
+        <item>Descarga</item>
+    </string-array>
+    <string-array name="design_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string name="title_activity_eam">Mapa</string>
+    <string name="title_activity_eamap">Map</string>
+
+    <!-- Sincronización y AniList -->
+    <string name="category_sync">Sincronización</string>
+    <string name="pref_sync_library_title">Sincronizar biblioteca dentro de la app</string>
+    <string name="pref_sync_library_summary">Marca como vistos en la app los episodios de tu lista de AniList</string>
+    <string name="pref_auto_scrobble_title">Sincronizar automáticamente a AniList</string>
+    <string name="pref_auto_scrobble_summary">Al terminar un episodio, actualiza tu progreso en AniList</string>
+    <string name="pref_exceptions_title">Excepciones de AniList</string>
+
+    <string name="anilist">AniList</string>
+    <string name="anilist_connect">Conectar con AniList</string>
+    <string name="anilist_connect_summary">Sincroniza tu progreso automáticamente</string>
+    <string name="anilist_connected_as">Conectado como %s</string>
+    <string name="anilist_unsynced_single">%d episodio sin sincronizar</string>
+    <string name="anilist_unsynced_plural">%d episodios sin sincronizar</string>
+    <plurals name="anilist_unsynced_episodes">
+        <item quantity="one">%d episodio sin sincronizar</item>
+        <item quantity="other">%d episodios sin sincronizar</item>
+    </plurals>
+    <string name="anilist_importing_toast">Importando tu lista de AniList…</string>
+    <string name="anilist_missing_client_id">Falta ANILIST_CLIENT_ID en local.properties</string>
+    <string name="anilist_disconnect_dialog_title">¿Desconectar tu cuenta de AniList?</string>
+    <string name="anilist_disconnect_action">Desconectar</string>
+    <string name="cancel">Cancelar</string>
+
+    <!-- Excepciones de AniList -->
+    <string name="anilist_exceptions_title">Excepciones de AniList</string>
+    <string name="anilist_exceptions_empty">Todo está sincronizado con AniList</string>
+    <string name="anilist_action_retry">Reintentar</string>
+    <string name="anilist_action_pick_manual">Elegir el anime en AniList</string>
+    <string name="anilist_action_dismiss">Descartar</string>
+    <string name="anilist_retrying">Reintentando…</string>
+    <string name="anilist_search_title">Buscar en AniList</string>
+    <string name="anilist_search_action">Buscar</string>
+    <string name="anilist_error_network">No se pudo conectar con AniList</string>
+    <string name="anilist_search_no_results">Sin resultados para \"%s\"</string>
+    <string name="anilist_pick_which">¿Cuál es?</string>
+    <string name="anilist_item_episode_format">%1$s · Episodio %2$s</string>
+    <string name="anilist_error_unknown">Error desconocido</string>
+
+    <!-- Notificaciones y workers de AniList -->
+    <string name="anilist_channel_name">Sincronización con AniList</string>
+    <string name="anilist_import_complete_title">Importación de AniList completa</string>
+    <string name="anilist_import_progress_title">Importando de AniList: %1$d de %2$d</string>
+    <string name="anilist_import_summary">Última importación: %1$d de %2$d animes</string>
+    <string name="anilist_import_unmatched">(%d sin coincidencia)</string>
+    <string name="anilist_reason_no_session">Sin sesión de AniList</string>
+    <string name="anilist_reason_not_found">AniList no encontró \"%s\"</string>
+    <string name="anilist_reason_rejected">AniList rechazó la actualización</string>
+    <string name="anilist_scrobble_registered">AniList: %1$s, episodio %2$s registrado</string>
+    <string name="anilist_rewatch_registered">AniList: %1$s, episodio %2$s registrado como rewatch</string>
+    <string name="anilist_status_registered">AniList: %1$s movido a %2$s</string>
+    <string name="anilist_status_failed">AniList: no se pudo cambiar el estado de %1$s</string>
+    <string name="anilist_retry_all">Reintentar todo</string>
+    <string name="anilist_sync_dialog_title">Sincronizando con AniList</string>
+    <string name="anilist_sync_dialog_message">Deja la app abierta mientras se sincroniza tu lista para que termine bien. Puede tardar unos minutos.</string>
+    <string name="anilist_sync_dialog_starting">Obteniendo tu lista de AniList…</string>
+    <string name="anilist_sync_dialog_step">Anime %1$d de %2$d</string>
+    <string name="anilist_sync_dialog_counters">Sincronizados: %1$d · No sincronizados: %2$d</string>
+    <string name="anilist_sync_dialog_searching">Buscando en la app…</string>
+    <string name="anilist_sync_dialog_episodes">%d episodios marcados como vistos</string>
+    <string name="anilist_sync_dialog_no_episodes">Lista actualizada (sin episodios vistos)</string>
+    <string name="anilist_sync_dialog_failed">No se encontró en la app</string>
+    <string name="anilist_sync_dialog_done">Sincronización terminada</string>
+    <string name="anilist_sync_dialog_hide">Ocultar</string>
+    <string name="anilist_sync_dialog_close">Listo</string>
+
+    <!-- Acerca de (Fork y créditos) -->
+    <string name="about_description">Fork no oficial de UKIKU con sincronización automática con AniList: importa tu biblioteca y registra cada episodio que terminas.</string>
+    <string name="about_version">Versión</string>
+    <string name="about_diagnostic">Diagnóstico</string>
+    <string name="about_fork">Fork</string>
+    <string name="about_fork_code">Código del fork</string>
+    <string name="about_website">Sitio web</string>
+    <string name="about_credits">Créditos</string>
+    <string name="about_ukiku_credit_title">UKIKU por Jordy Alexis Mendoza Caballero</string>
+    <string name="about_ukiku_credit_desc">Proyecto original del que deriva este fork</string>
+    <string name="about_ukiku_license_title">Licencia MIT de UKIKU</string>
+    <string name="about_dtpv_credit_title">DoubleTapPlayerView por Viktor Krez</string>
+    <string name="about_dtpv_credit_desc">Copyright (c) 2019 Viktor Krez · MIT · incluido como módulo :dtpv</string>
+    <string name="about_anilist_desc">Datos y sincronización vía la API pública de AniList</string>
+    <string name="about_extras">Extras</string>
+    <string name="about_easter_egg">Easter egg</string>
+    <string name="about_close">Cerrar</string>
+    <!-- Autoplay y desmarcado -->
+    <string name="next_episode_label">Siguiente episodio</string>
+    <string name="next_episode_title">%1$s - Episodio %2$s</string>
+    <string name="next_episode_countdown">Comienza en %d s</string>
+    <string name="next_episode_searching">Buscando servidor...</string>
+    <string name="next_episode_not_found">No se encontró el siguiente episodio en ningún servidor</string>
+    <string name="next_episode_cancel">Cancelar</string>
+    <string name="next_episode_play">▶  Ver ahora</string>
+    <string name="anilist_unscrobble_planning">AniList: %s vuelto a Planeado</string>
+    <string name="anilist_unscrobble_progress">AniList: %1$s, progreso bajado a episodio %2$d</string>
+    <string name="anilist_session_expired">Tu sesión de AniList caducó, vuelve a conectar tu cuenta</string>
+    <string name="anilist_tab_stats">Estadísticas</string>
+    <string name="anilist_tab_profile">Perfil</string>
+    <string name="anilist_loading">Cargando…</string>
+    <string name="anilist_load_error">No se pudo cargar tu perfil de AniList</string>
+    <string name="anilist_stat_summary">Resumen</string>
+    <string name="anilist_stat_anime">Animes</string>
+    <string name="anilist_stat_episodes">Episodios</string>
+    <string name="anilist_stat_days">Días vistos</string>
+    <string name="anilist_stat_hours">Horas</string>
+    <string name="anilist_stat_mean">Media</string>
+    <string name="anilist_stat_scores">Distribución de puntuaciones</string>
+    <string name="anilist_stat_genres">Géneros más vistos</string>
+    <string name="anilist_stat_years">Animes por año</string>
+    <string name="anilist_stat_formats">Formatos</string>
+    <string name="anilist_stat_statuses">Estados</string>
+    <string name="anilist_open_web">Abrir en AniList</string>
+    <string name="anilist_member_since">Miembro desde %1$s</string>
+    <string name="anilist_bio">Biografía</string>
+    <string name="anilist_no_bio">Sin biografía</string>
+    <string name="anilist_medals">Medallas (%1$d / %2$d)</string>
+    <string name="anilist_local_achievements">Logros de la app</string>
+    <string name="anilist_no_achievements">Aún no has desbloqueado logros</string>
+    <string name="anilist_favourites">Animes favoritos</string>
+    <string name="anilist_fav_characters">Personajes favoritos</string>
+    <string name="anilist_fav_staff">Staff favorito</string>
+    <string name="anilist_fav_studios">Estudios favoritos</string>
+    <string name="anilist_no_favourites">Sin favoritos</string>
+    <string name="anilist_count_suffix">%1$d animes</string>
+    <string name="anilist_medal_1">Iniciado del Anime|10+ animes registrados</string>
+    <string name="anilist_medal_2">Coleccionista|100+ animes registrados</string>
+    <string name="anilist_medal_3">Biblioteca Viviente|300+ animes registrados</string>
+    <string name="anilist_medal_4">Maratonista|Más de 7 días vistos</string>
+    <string name="anilist_medal_5">Viajero del Tiempo|Más de 30 días vistos</string>
+    <string name="anilist_medal_6">Eternidad Otaku|Más de 100 días vistos</string>
+    <string name="anilist_medal_7">Centurión|500 episodios vistos</string>
+    <string name="anilist_medal_8">Leyenda de los 1,000|1,000 episodios vistos</string>
+    <string name="anilist_medal_9">Crítico Implacable|50+ animes calificados</string>
+    <string name="anilist_medal_10">Polímata de Géneros|5+ animes en 10 géneros</string>
+    <string name="anilist_medal_11">Especialista|50+ animes de tu género favorito</string>
+    <string name="anilist_not_in_catalog">%s no está en el catálogo de la app; se abre en AniList</string>
+    <string name="anilist_pick_anime">Elige el anime correcto</string>
+</resources>

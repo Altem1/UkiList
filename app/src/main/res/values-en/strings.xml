@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Synchronization and AniList -->
+    <string name="category_sync">Synchronization</string>
+    <string name="pref_sync_library_title">Sync library inside the app</string>
+    <string name="pref_sync_library_summary">Mark episodes in your AniList library as seen in the app</string>
+    <string name="pref_auto_scrobble_title">Auto scrobble to AniList</string>
+    <string name="pref_auto_scrobble_summary">Update your AniList progress when finishing an episode</string>
+    <string name="pref_exceptions_title">AniList exceptions</string>
+
+    <string name="anilist">AniList</string>
+    <string name="anilist_connect">Connect to AniList</string>
+    <string name="anilist_connect_summary">Automatically sync your progress</string>
+    <string name="anilist_connected_as">Connected as %s</string>
+    <string name="anilist_unsynced_single">%d unsynced episode</string>
+    <string name="anilist_unsynced_plural">%d unsynced episodes</string>
+    <plurals name="anilist_unsynced_episodes">
+        <item quantity="one">%d unsynced episode</item>
+        <item quantity="other">%d unsynced episodes</item>
+    </plurals>
+    <string name="anilist_importing_toast">Importing your AniList library…</string>
+    <string name="anilist_missing_client_id">Missing ANILIST_CLIENT_ID in local.properties</string>
+    <string name="anilist_disconnect_dialog_title">Disconnect your AniList account?</string>
+    <string name="anilist_disconnect_action">Disconnect</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- AniList Exceptions -->
+    <string name="anilist_exceptions_title">AniList exceptions</string>
+    <string name="anilist_exceptions_empty">Everything is in sync with AniList</string>
+    <string name="anilist_action_retry">Retry</string>
+    <string name="anilist_action_pick_manual">Choose anime on AniList</string>
+    <string name="anilist_action_dismiss">Dismiss</string>
+    <string name="anilist_retrying">Retrying…</string>
+    <string name="anilist_search_title">Search on AniList</string>
+    <string name="anilist_search_action">Search</string>
+    <string name="anilist_error_network">Could not connect to AniList</string>
+    <string name="anilist_search_no_results">No results for \"%s\"</string>
+    <string name="anilist_pick_which">Which one is it?</string>
+    <string name="anilist_item_episode_format">%1$s · Episode %2$s</string>
+    <string name="anilist_error_unknown">Unknown error</string>
+
+    <!-- AniList notifications and workers -->
+    <string name="anilist_channel_name">AniList synchronization</string>
+    <string name="anilist_import_complete_title">AniList import complete</string>
+    <string name="anilist_import_progress_title">Importing from AniList: %1$d of %2$d</string>
+    <string name="anilist_import_summary">Last import: %1$d of %2$d anime</string>
+    <string name="anilist_import_unmatched">(%d unmatched)</string>
+    <string name="anilist_reason_no_session">No AniList session</string>
+    <string name="anilist_reason_not_found">AniList could not find \"%s\"</string>
+    <string name="anilist_reason_rejected">AniList rejected the update</string>
+    <string name="anilist_scrobble_registered">AniList: %1$s, episode %2$s registered</string>
+
+    <!-- About (Fork and credits) -->
+    <string name="about_description">Unofficial fork of UKIKU with automatic AniList sync: import your library and scrobble every completed episode. Ad-free.</string>
+    <string name="about_version">Version</string>
+    <string name="about_diagnostic">Diagnostics</string>
+    <string name="about_fork">Fork</string>
+    <string name="about_fork_code">Fork source code</string>
+    <string name="about_credits">Credits</string>
+    <string name="about_ukiku_credit_title">UKIKU by Jordy Alexis Mendoza Caballero</string>
+    <string name="about_ukiku_credit_desc">Original project from which this fork derives</string>
+    <string name="about_ukiku_license_title">UKIKU MIT License</string>
+    <string name="about_dtpv_credit_title">DoubleTapPlayerView by Viktor Krez</string>
+    <string name="about_dtpv_credit_desc">Copyright (c) 2019 Viktor Krez · MIT · bundled as :dtpv module</string>
+    <string name="about_anilist_desc">Data and sync powered by public AniList API</string>
+    <string name="about_extras">Extras</string>
+    <string name="about_easter_egg">Easter egg</string>
+    <string name="about_close">Close</string>
+    <!-- Autoplay and unmark -->
+    <string name="next_episode_label">Next episode</string>
+    <string name="next_episode_title">%1$s - Episode %2$s</string>
+    <string name="next_episode_countdown">Starting in %d s</string>
+    <string name="next_episode_searching">Looking for a server...</string>
+    <string name="next_episode_not_found">Next episode not found on any server</string>
+    <string name="next_episode_cancel">Cancel</string>
+    <string name="next_episode_play">▶  Play now</string>
+    <string name="anilist_unscrobble_planning">AniList: %s moved back to Planning</string>
+    <string name="anilist_unscrobble_progress">AniList: %1$s, progress lowered to episode %2$d</string>
+    <string name="anilist_session_expired">Your AniList session expired, please reconnect your account</string>
+    <string name="anilist_tab_stats">Statistics</string>
+    <string name="anilist_tab_profile">Profile</string>
+    <string name="anilist_loading">Loading…</string>
+    <string name="anilist_load_error">Could not load your AniList profile</string>
+    <string name="anilist_stat_summary">Summary</string>
+    <string name="anilist_stat_anime">Anime</string>
+    <string name="anilist_stat_episodes">Episodes</string>
+    <string name="anilist_stat_days">Days watched</string>
+    <string name="anilist_stat_hours">Hours</string>
+    <string name="anilist_stat_mean">Mean score</string>
+    <string name="anilist_stat_scores">Score distribution</string>
+    <string name="anilist_stat_genres">Top genres</string>
+    <string name="anilist_stat_years">Anime by year</string>
+    <string name="anilist_stat_formats">Formats</string>
+    <string name="anilist_stat_statuses">Statuses</string>
+    <string name="anilist_open_web">Open in AniList</string>
+    <string name="anilist_member_since">Member since %1$s</string>
+    <string name="anilist_bio">Biography</string>
+    <string name="anilist_no_bio">No biography</string>
+    <string name="anilist_medals">Medals (%1$d / %2$d)</string>
+    <string name="anilist_local_achievements">App achievements</string>
+    <string name="anilist_no_achievements">No achievements unlocked yet</string>
+    <string name="anilist_favourites">Favourite anime</string>
+    <string name="anilist_no_favourites">No favourites</string>
+    <string name="anilist_count_suffix">%1$d anime</string>
+    <string name="anilist_medal_1">Anime Initiate|10+ anime listed</string>
+    <string name="anilist_medal_2">Collector|100+ anime listed</string>
+    <string name="anilist_medal_3">Living Library|300+ anime listed</string>
+    <string name="anilist_medal_4">Marathoner|Over 7 days watched</string>
+    <string name="anilist_medal_5">Time Traveler|Over 30 days watched</string>
+    <string name="anilist_medal_6">Otaku Eternity|Over 100 days watched</string>
+    <string name="anilist_medal_7">Centurion|500 episodes watched</string>
+    <string name="anilist_medal_8">Legend of 1,000|1,000 episodes watched</string>
+    <string name="anilist_medal_9">Relentless Critic|50+ anime rated</string>
+    <string name="anilist_medal_10">Genre Polymath|5+ anime in 10 genres</string>
+    <string name="anilist_medal_11">Specialist|50+ anime of your top genre</string>
+    <string name="anilist_not_in_catalog">%s is not in the app catalog; opening on AniList</string>
+    <string name="anilist_pick_anime">Pick the right anime</string>
+</resources>

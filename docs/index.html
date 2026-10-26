@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UkiList</title>
+<meta name="description" content="UkiList: anime en tu Android con sincronización automática con AniList. Fork de UKIKU.">
+<meta name="theme-color" content="#0b1020">
+<meta property="og:title" content="UkiList">
+<meta property="og:description" content="Anime en Android con sincronización automática con AniList.">
+<meta property="og:image" content="assets/logo.png">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070b18;
+    --text: #eef2ff;
+    --muted: #a5b0d0;
+    --glass: rgba(255, 255, 255, 0.06);
+    --glass-strong: rgba(255, 255, 255, 0.10);
+    --border: rgba(255, 255, 255, 0.14);
+    --blue: #5b9dff;
+    --cyan: #7cc4ff;
+    --violet: #7b7bff;
+    --ok: #4ade80;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Manchas de color de fondo que el vidrio difumina */
+  .blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+  .blobs span {
+    position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55;
+    animation: float 18s ease-in-out infinite alternate;
+  }
+  .blobs span:nth-child(1) { width: 480px; height: 480px; background: var(--blue); top: -120px; left: -100px; }
+  .blobs span:nth-child(2) { width: 420px; height: 420px; background: var(--violet); top: 30%; right: -140px; animation-delay: -6s; }
+  .blobs span:nth-child(3) { width: 360px; height: 360px; background: var(--cyan); bottom: -120px; left: 25%; opacity: .35; animation-delay: -12s; }
+  @keyframes float { to { transform: translate(60px, 40px) scale(1.1); } }
+  @media (prefers-reduced-motion: reduce) { .blobs span { animation: none; } }
+
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+  nav { position: sticky; top: 12px; z-index: 10; margin-top: 12px; }
+  nav .glass { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; border-radius: 18px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--text); text-decoration: none; }
+  .brand img { width: 34px; height: 34px; border-radius: 10px; image-rendering: pixelated; }
+  nav a.link { color: var(--muted); text-decoration: none; font-weight: 500; margin-left: 18px; }
+  nav a.link:hover { color: var(--text); }
+
+  .hero { display: grid; grid-template-columns: 1.2fr .8fr; gap: 40px; align-items: center; padding: 72px 0 48px; }
+  .badge {
+    display: inline-flex; gap: 8px; align-items: center; padding: 6px 14px; border-radius: 999px;
+    background: var(--glass-strong); border: 1px solid var(--border); color: var(--cyan); font-size: 14px; font-weight: 600;
+  }
+  h1 { font-size: clamp(40px, 7vw, 68px); line-height: 1.05; margin: 18px 0; letter-spacing: -1.5px; }
+  h1 em { font-style: normal; background: linear-gradient(90deg, var(--cyan), var(--blue), var(--violet)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { color: var(--muted); font-size: 18px; max-width: 540px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; padding: 14px 24px; border-radius: 16px;
+    font-weight: 600; font-size: 16px; text-decoration: none; cursor: pointer; border: 1px solid var(--border);
+    transition: transform .15s, box-shadow .15s, background .15s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.primary { background: linear-gradient(135deg, var(--blue), var(--violet)); color: #fff; border: none; box-shadow: 0 8px 30px rgba(91, 157, 255, .45); }
+  .btn.ghost { background: var(--glass); color: var(--text); backdrop-filter: blur(12px); }
+  .btn svg { width: 20px; height: 20px; }
+  .release-info { color: var(--muted); font-size: 14px; margin-top: 12px; min-height: 22px; }
+
+  .phone { padding: 26px; text-align: center; }
+  .phone img { width: 100%; max-width: 260px; border-radius: 32px; image-rendering: pixelated; filter: drop-shadow(0 20px 40px rgba(91, 157, 255, .4)); }
+  .sync-demo { margin-top: 18px; padding: 14px; border-radius: 16px; background: rgba(0,0,0,.25); text-align: left; font-size: 14px; }
+  .sync-demo .row { display: flex; justify-content: space-between; color: var(--muted); }
+  .bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,.1); margin: 10px 0; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 99px; animation: fill 4s ease-in-out infinite; }
+  @keyframes fill { 0% { width: 5%; } 80%, 100% { width: 100%; } }
+
+  section { padding: 40px 0; }
+  h2 { font-size: clamp(28px, 4vw, 38px); margin-bottom: 8px; letter-spacing: -.5px; }
+  .sub { color: var(--muted); margin-bottom: 28px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card { padding: 24px; transition: transform .2s, background .2s; }
+  .card:hover { transform: translateY(-4px); background: var(--glass-strong); }
+  .card .ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; margin-bottom: 14px; background: linear-gradient(135deg, rgba(95,212,255,.25), rgba(139,108,255,.25)); border: 1px solid var(--border); }
+  .card .ic svg { width: 24px; height: 24px; stroke: var(--cyan); }
+  .card h3 { font-size: 18px; margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: 15px; }
+
+  .steps { counter-reset: s; display: grid; gap: 14px; }
+  .step { padding: 18px 22px 18px 70px; position: relative; }
+  .step::before {
+    counter-increment: s; content: counter(s); position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+    width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 800;
+    background: linear-gradient(135deg, var(--blue), var(--violet));
+  }
+  .step b { display: block; }
+  .step span { color: var(--muted); font-size: 15px; }
+
+  .note { padding: 22px 24px; color: var(--muted); font-size: 15px; }
+  .note a { color: var(--cyan); }
+
+
+  /* Carrusel de novedades */
+  .carousel { position: relative; }
+  .track {
+    display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+    padding: 4px 2px 18px; scrollbar-width: none;
+  }
+  .track::-webkit-scrollbar { display: none; }
+  .slide { flex: 0 0 calc((100% - 36px) / 3); scroll-snap-align: start; padding: 26px; display: flex; flex-direction: column; gap: 10px; }
+  .slide .tag { align-self: flex-start; font-size: 12px; font-weight: 600; color: var(--cyan); padding: 3px 10px; border-radius: 99px; background: rgba(124,196,255,.12); border: 1px solid var(--border); }
+  .slide h3 { font-size: 19px; }
+  .slide p { color: var(--muted); font-size: 15px; }
+  .slide .shot { height: 380px; border-radius: 16px; background: rgba(0,0,0,.3); display: grid; place-items: center; overflow: hidden; margin-bottom: 6px; }
+  .slide .shot img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 12px; }
+  .slide.wide .shot img { width: 100%; height: auto; }
+  .slide .mock { margin-top: auto; padding: 12px 14px; border-radius: 14px; background: rgba(0,0,0,.25); font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+  .slide .mock b { color: var(--text); font-weight: 600; }
+  .car-controls { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 6px; }
+  .car-btn { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; cursor: pointer; color: var(--text); background: var(--glass); border: 1px solid var(--border); backdrop-filter: blur(12px); }
+  .car-btn:hover { background: var(--glass-strong); }
+  .dots { display: flex; gap: 8px; }
+  .dots button { width: 9px; height: 9px; border-radius: 99px; border: none; padding: 0; cursor: pointer; background: rgba(255,255,255,.25); transition: width .25s, background .25s; }
+  .dots button.on { width: 26px; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+  @media (max-width: 820px) { .slide { flex-basis: 86%; } }
+
+  footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; text-align: center; }
+  footer a { color: var(--text); }
+
+  @media (max-width: 820px) {
+    .hero { grid-template-columns: 1fr; padding-top: 40px; text-align: center; }
+    .lead { margin: 0 auto; }
+    .cta { justify-content: center; }
+    .grid { grid-template-columns: 1fr; }
+    nav a.link.hide-sm { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="blobs" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<div class="wrap">
+  <nav>
+    <div class="glass">
+      <a class="brand" href="#"><img src="assets/logo.png" alt="">UkiList</a>
+      <div>
+        <a class="link hide-sm" href="#novedades">Novedades</a>
+        <a class="link hide-sm" href="#funciones">Funciones</a>
+        <a class="link hide-sm" href="#instalar">Instalar</a>
+        <a class="link" href="https://github.com/Altem1/UkiList">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <span class="badge">● Pre-release · Android</span>
+      <h1>Tu anime, <em>siempre sincronizado</em> con AniList</h1>
+      <p class="lead">UkiList es un fork de UKIKU que conecta tu cuenta de AniList: importa tu biblioteca, marca lo que ya viste y registra cada episodio que terminas, sin que tengas que hacer nada.</p>
+      <div class="cta">
+        <a id="download" class="btn primary" href="https://github.com/Altem1/UkiList/releases">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg>
+          <span id="download-label">Descargar APK</span>
+        </a>
+        <a class="btn ghost" href="https://github.com/Altem1/UkiList/releases">Ver todas las versiones</a>
+      </div>
+      <p id="release-info" class="release-info">Buscando la última pre-release…</p>
+    </div>
+    <div class="glass phone">
+      <img src="assets/logo.png" alt="Logo de UkiList: mago en pixel art">
+      <div class="sync-demo">
+        <div class="row"><b style="color:var(--text)">Sincronizando con AniList</b><span>✓</span></div>
+        <div class="bar"><i></i></div>
+        <div class="row"><span>Episodio registrado</span><span style="color:var(--ok)">AniList ✓</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="novedades">
+    <h2>Novedades</h2>
+    <p class="sub">Lo que UkiList agrega sobre UKIKU.</p>
+    <div class="carousel">
+      <div class="track" id="track">
+        <div class="glass slide"><div class="shot"><img src="assets/shots/sync.webp" alt="Ventana de sincronización" loading="lazy"></div><span class="tag">AniList</span><h3>Ventana de sincronización</h3><p>Carátula del anime en curso, barra de avance y contador de lo que se sincronizó y lo que no.</p></div>
+        <div class="glass slide wide"><div class="shot"><img src="assets/shots/autoplay.webp" alt="Autoplay estilo Netflix" loading="lazy"></div><span class="tag">Reproductor</span><h3>Autoplay estilo Netflix</h3><p>Al terminar, el episodio se encoge y aparece el siguiente con cuenta regresiva. Si el servidor no lo tiene, prueba con los demás.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/episodios.webp" alt="Nube de sincronización" loading="lazy"></div><span class="tag">Episodios</span><h3>Nube de sincronización</h3><p>Los vistos se marcan solos desde tu progreso en AniList, y la nube indica cuáles ya están subidos.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/lista.webp" alt="Tu lista dentro de la app" loading="lazy"></div><span class="tag">AniList</span><h3>Tu lista dentro de la app</h3><p>Viendo, pendientes, completados e historial de AniList, con tu progreso en cada anime.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/estadisticas.webp" alt="Estadísticas" loading="lazy"></div><span class="tag">Perfil</span><h3>Estadísticas</h3><p>Animes, episodios, días vistos, puntuaciones y géneros más vistos.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/perfil.webp" alt="Perfil y medallas" loading="lazy"></div><span class="tag">Perfil</span><h3>Perfil y medallas</h3><p>Tu perfil de AniList, medallas por lo que has visto y logros de la app.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/menu.webp" alt="Tu portada de AniList" loading="lazy"></div><span class="tag">Menú lateral</span><h3>Tu portada de AniList</h3><p>El menú lateral muestra tu avatar y la portada de tu perfil, y lo que falle al subir aparece ahí para reintentarlo.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/inicio.webp" alt="Todo lo de UKIKU" loading="lazy"></div><span class="tag">Inicio</span><h3>Todo lo de UKIKU</h3><p>Recientes, emisión, catálogo y descargas, con el nuevo color azul.</p></div>
+      </div>
+      <div class="car-controls">
+        <button class="car-btn" id="prev" aria-label="Anterior">‹</button>
+        <div class="dots" id="dots"></div>
+        <button class="car-btn" id="next" aria-label="Siguiente">›</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="funciones">
+    <h2>Funciones</h2>
+    <p class="sub">Todo lo de UKIKU, más una integración completa con AniList.</p>
+    <div class="grid">
+      <div class="glass card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
+        <h3>Scrobble automático</h3>
+        <p>Al ver el 85% de un episodio se registra en AniList, aunque cierres el reproductor de golpe.</p>
+      </div>
+      <div class="glass card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M4 15h16M4 11h10M4 7h16"/></svg></div>
+        <h3>Importa tu biblioteca</h3>
+        <p>Tus listas y episodios vistos en AniList aparecen en la app, con una ventana que muestra el avance.</p>
+      </div>
+      <div class="glass card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg></div>
+        <h3>Rewatch</h3>
+        <p>Si vuelves a ver un anime completado, AniList lo marca como "Rewatching" y suma la repetición al terminarlo.</p>
+      </div>
+      <div class="glass card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg></div>
+        <h3>Autoplay</h3>
+        <p>Cuenta regresiva para el siguiente episodio. Si el servidor no lo tiene, prueba con los demás.</p>
+      </div>
+      <div class="glass card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.3A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
+        <h3>Estado por episodio</h3>
+        <p>Una nube junto a cada episodio indica si ya está en AniList. Lo que falla se reintenta desde el menú.</p>
+      </div>
+      <div class="glass card">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+        <h3>Perfil y estadísticas</h3>
+        <p>Tu perfil de AniList, favoritos, géneros más vistos y medallas, dentro de la app.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="instalar">
+    <h2>Cómo instalar</h2>
+    <p class="sub">La app no está en Play Store: se instala desde el APK.</p>
+    <div class="steps">
+      <div class="glass step"><b>Descarga el APK</b><span>Con el botón de arriba se baja la pre-release más reciente desde GitHub.</span></div>
+      <div class="glass step"><b>Permite la instalación</b><span>Android te pedirá permitir instalar apps de tu navegador o gestor de archivos.</span></div>
+      <div class="glass step"><b>Conecta AniList</b><span>Abre el menú lateral, toca "Conectar con AniList" y deja la app abierta mientras se sincroniza tu lista.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="glass note">
+      <b style="color:var(--text)">Es una pre-release.</b> Puede tener errores; si encuentras uno, repórtalo en
+      <a href="https://github.com/Altem1/UkiList/issues">GitHub Issues</a>. UkiList no es un proyecto oficial de AniList ni de UKIKU.
+    </div>
+  </section>
+
+  <footer>
+    UkiList por <a href="https://github.com/Altem1">Altem01</a> · Fork de
+    <a href="https://github.com/jordyamc/UKIKU">UKIKU</a> por Jordy Alexis Mendoza Caballero · Licencia MIT
+  </footer>
+</div>
+
+<script>
+  // Sin backend: se pregunta a la API pública de GitHub por la release más reciente (pre-release incluida)
+  // y el botón apunta directo a su APK. Si algo falla, queda el enlace a la página de releases.
+  (async () => {
+    const info = document.getElementById("release-info");
+    const button = document.getElementById("download");
+    const label = document.getElementById("download-label");
+    try {
+      const res = await fetch("https://api.github.com/repos/Altem1/UkiList/releases?per_page=10");
+      if (!res.ok) throw new Error(res.status);
+      const releases = (await res.json()).filter(r => !r.draft);
+      const release = releases.find(r => r.prerelease) || releases[0];
+      const apk = release && release.assets.find(a => a.name.endsWith(".apk") && !/tv/i.test(a.name));
+      if (!apk) throw new Error("sin apk");
+      button.href = apk.browser_download_url;
+      label.textContent = `Descargar ${release.tag_name}`;
+      const mb = (apk.size / 1048576).toFixed(1);
+      const date = new Date(release.published_at).toLocaleDateString("es", { day: "numeric", month: "long", year: "numeric" });
+      info.textContent = `${release.prerelease ? "Pre-release" : "Versión estable"} · ${mb} MB · ${date}`;
+    } catch (e) {
+      info.textContent = "Descarga disponible en la página de releases de GitHub.";
+    }
+  })();
+
+  // Carrusel: flechas, puntos y avance automático que se pausa al interactuar.
+  (() => {
+    const track = document.getElementById("track");
+    const slides = [...track.children];
+    const dots = document.getElementById("dots");
+    const step = () => slides[0].getBoundingClientRect().width + 18;
+    const pages = () => Math.max(1, Math.round((track.scrollWidth - track.clientWidth) / step()) + 1);
+    const current = () => Math.round(track.scrollLeft / step());
+    const go = i => track.scrollTo({ left: ((i + pages()) % pages()) * step() });
+    const draw = () => {
+      if (dots.children.length !== pages()) {
+        dots.innerHTML = "";
+        for (let i = 0; i < pages(); i++) {
+          const b = document.createElement("button");
+          b.setAttribute("aria-label", `Ir a ${i + 1}`);
+          b.onclick = () => { go(i); pause(); };
+          dots.appendChild(b);
+        }
+      }
+      [...dots.children].forEach((d, i) => d.classList.toggle("on", i === current()));
+    };
+    let timer = null;
+    const play = () => { if (!matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(() => go(current() + 1), 4500); };
+    const pause = () => { clearInterval(timer); timer = null; };
+    document.getElementById("prev").onclick = () => { go(current() - 1); pause(); };
+    document.getElementById("next").onclick = () => { go(current() + 1); pause(); };
+    track.addEventListener("scroll", () => requestAnimationFrame(draw));
+    track.addEventListener("pointerdown", pause);
+    window.addEventListener("resize", draw);
+    draw();
+    play();
+  })();
+</script>
+</body>
+</html>

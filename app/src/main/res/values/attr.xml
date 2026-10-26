@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AdTemplateView">
+        <attr name="at_layout" format="reference"/>
+    </declare-styleable>
+    <declare-styleable name="ExpandableTextView">
+        <attr name="tvea_expandLines" format="integer"/>
+        <attr name="tvea_shrinkBitmap" format="reference"/>
+        <attr name="tvea_expandBitmap" format="reference"/>
+        <attr name="tvea_textStateColor" format="color"/>
+        <attr name="tvea_textContentColor" format="color"/>
+        <attr name="tvea_textContentSize" format="dimension"/>
+        <attr name="tvea_textShrink" format="string"/>
+        <attr name="tvea_textExpand" format="string"/>
+    </declare-styleable>
+    <declare-styleable name="SyncItemView">
+        <attr name="si_title" format="string"/>
+        <attr name="si_showDivider" format="boolean"/>
+        <attr name="si_actionId" format="string"/>
+        <attr name="si_hideBackup" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="SyncStaticItemView">
+        <attr name="ssi_title" format="string" />
+        <attr name="ssi_showDivider" format="boolean" />
+        <attr name="ssi_prefId" format="string" />
+    </declare-styleable>
+    <declare-styleable name="StateView">
+        <attr name="sv_title" format="string"/>
+    </declare-styleable>
+    <declare-styleable name="StateViewMaterial">
+        <attr name="svm_title" format="string"/>
+    </declare-styleable>
+    <declare-styleable name="ConnectionState">
+        <attr name="cs_bg_color" format="color"/>
+    </declare-styleable>
+    <declare-styleable name="HomeList">
+        <attr name="hm_showViewAll" format="boolean"/>
+        <attr name="hm_viewAllText" format="string" />
+        <attr name="hm_isLarge" format="boolean"/>
+        <attr name="hm_subheader" format="string"/>
+        <attr name="hm_startHidden" format="boolean"/>
+        <attr name="hm_errorText" format="string"/>
+    </declare-styleable>
+    <declare-styleable name="BannerContainerView">
+        <attr name="showBottomSpace" format="boolean" />
+    </declare-styleable>
+    <attr name="colorAccentLight" format="reference"/>
+</resources>

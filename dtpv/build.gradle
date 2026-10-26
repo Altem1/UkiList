@@ -1,0 +1,27 @@
+// Port local de https://github.com/vkay94/DoubleTapPlayerView (MIT) a media3.
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace 'com.github.vkay94.dtpv'
+    compileSdk 36
+    defaultConfig {
+        minSdkVersion 26
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+    compileOptions {
+        sourceCompatibility = '17'
+        targetCompatibility = '17'
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.core:core-ktx:1.16.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.media3:media3-common:1.10.1'
+    implementation 'androidx.media3:media3-ui:1.10.1'
+}

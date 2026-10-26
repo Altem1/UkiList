@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- snackbar -->
+    <color name="background">#424242</color>
+    <!-- text color -->
+    <color name="textWhitePrimary">#fff</color>
+
+    <color name="screenBackground">#fff3f3f3</color>
+
+    <color name="colorPrimary">#ffffff</color>
+    <color name="colorPrimaryDark">#c7c7c7</color>
+    <color name="colorAccent">#5a7dff</color>
+
+    <color name="stateOk">#43a047</color>
+    <color name="stateWarning">#fdd835</color>
+    <color name="stateError">#e53935</color>
+
+    <color name="release_new">#d4b621</color>
+    <color name="release_change">#107307</color>
+    <color name="release_error">#ae1315</color>
+
+    <color name="colorAccentPink">#C2185B</color>
+    <color name="colorAccentPurple">#7B1FA2</color>
+    <color name="colorAccentDeepPurple">#512DA8</color>
+    <color name="colorAccentIndigo">#303F9F</color>
+    <color name="colorAccentBlue">#1976D2</color>
+    <color name="colorAccentLightBlue">#0288D1</color>
+    <color name="colorAccentCyan">#0097A7</color>
+    <color name="colorAccentTeal">#00796B</color>
+    <color name="colorAccentGreen">#388e3c</color>
+    <color name="colorAccentLightGreen">#689F38</color>
+    <color name="colorAccentLime">#AFB42B</color>
+    <color name="colorAccentYellow">#FBC02D</color>
+    <color name="colorAccentAmber">#FFA000</color>
+    <color name="colorAccentOrange">#F57C00</color>
+    <color name="colorAccentDeepOrange">#E64A19</color>
+    <color name="colorAccentBrown">#5D4037</color>
+    <color name="colorAccentGray">#616161</color>
+    <color name="colorAccentBlueGrey">#455A64</color>
+
+    <color name="colorAccentLight">#8fa8ff</color>
+
+    <color name="colorAccentPinkLight">#fa5788</color>
+    <color name="colorAccentPurpleLight">#ae52d4</color>
+    <color name="colorAccentDeepPurpleLight">#8559da</color>
+    <color name="colorAccentIndigoLight">#666ad1</color>
+    <color name="colorAccentBlueLight">#63a4ff</color>
+    <color name="colorAccentLightBlueLight">#5eb8ff</color>
+    <color name="colorAccentCyanLight">#56c8d8</color>
+    <color name="colorAccentTealLight">#48a999</color>
+    <color name="colorAccentGreenLight">#6abf69</color>
+    <color name="colorAccentLightGreenLight">#99d066</color>
+    <color name="colorAccentLimeLight">#e4e65e</color>
+    <color name="colorAccentYellowLight">#fff263</color>
+    <color name="colorAccentAmberLight">#ffd149</color>
+    <color name="colorAccentOrangeLight">#ffad42</color>
+    <color name="colorAccentDeepOrangeLight">#ff7d47</color>
+    <color name="colorAccentBrownLight">#8b6b61</color>
+    <color name="colorAccentGrayLight">#8e8e8e</color>
+    <color name="colorAccentBlueGreyLight">#718792</color>
+
+    <color name="cardview_background">#FFFFFF</color>
+
+    <color name="divider">#000000</color>
+    <color name="separator">#26000000</color>
+    <color name="textPrimary">#000</color>
+    <color name="textSecondaryAlpha">#8A000000</color>
+    <color name="textSecondaryTitle">#80000000</color>
+    <color name="textSecondary">#323232</color>
+    <color name="textSecondaryDark">#DAFFFFFF</color>
+
+    <color name="colorSplash">#101840</color>
+
+    <color name="dropbox">#007EE5</color>
+    <color name="firestore">#FFA000</color>
+    <color name="drive">#ffbb00</color>
+    <color name="text_disable">#42000000</color>
+
+    <color name="color_bottom_line_disabled">#AAAAAA</color>
+
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/download"
+        android:title="DESCARGA"/>
+    <item
+        android:id="@+id/streaming"
+        android:title="STREAMING"/>
+    <item
+        android:id="@+id/queue"
+        android:title="AÑADIR A COLA"/>
+    <item
+        android:id="@+id/share"
+        android:title="COMPARTIR"/>
+    <item
+        android:id="@+id/import_file"
+        android:title="IMPORTAR"/>
+    <item
+        android:id="@+id/commentaries"
+        android:title="COMENTARIOS"
+        android:visible="false" />
+</menu>

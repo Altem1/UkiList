@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_bottom_recents"
+        android:enabled="true"
+        android:icon="@drawable/bottom_recents"
+        android:title="Recientes"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_bottom_favorites"
+        android:enabled="true"
+        android:icon="@drawable/heart_full"
+        android:title="Favoritos"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_bottom_directory"
+        android:enabled="true"
+        android:icon="@drawable/bottom_directory"
+        android:title="Directorio"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_bottom_settings"
+        android:enabled="true"
+        android:icon="@drawable/bottom_settings"
+        android:title="Configuración"
+        app:showAsAction="ifRoom"/>
+</menu>

@@ -1,0 +1,140 @@
+package knf.kuma.news
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingData
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.afollestad.materialdialogs.LayoutMode
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.bottomsheets.setPeekHeight
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.afollestad.materialdialogs.list.listItemsSingleChoice
+import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.chlm.SpacingItemDecoration
+import knf.kuma.R
+import knf.kuma.ads.AdsType
+import knf.kuma.ads.implBanner
+import knf.kuma.ads.showRandomInterstitial
+import knf.kuma.commons.EAHelper
+import knf.kuma.commons.Network
+import knf.kuma.commons.PrefsUtil
+import knf.kuma.commons.asPx
+import knf.kuma.commons.setSurfaceBars
+import knf.kuma.commons.showSnackbar
+import knf.kuma.custom.GenericActivity
+import knf.kuma.databinding.ActivityNewsMaterialBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+class MaterialNewsActivity : GenericActivity(), SwipeRefreshLayout.OnRefreshListener {
+    val model: NewsViewModel by viewModels()
+    private val binding by lazy { ActivityNewsMaterialBinding.inflate(layoutInflater) }
+    val adapter: MaterialNewsAdapter by lazy { MaterialNewsAdapter(this) }
+    var snack: Snackbar? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(EAHelper.getTheme())
+        super.onCreate(savedInstanceState)
+        setSurfaceBars()
+        setContentView(binding.root)
+        binding.toolbar.title = "Recientes"
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(false)
+        binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.refresh.setColorSchemeResources(EAHelper.getThemeColor(), EAHelper.getThemeColorLight(), R.color.colorPrimary)
+        binding.refresh.setOnRefreshListener(this)
+        binding.refresh.isRefreshing = true
+        binding.recycler.adapter = adapter
+        binding.recycler.addItemDecoration(SpacingItemDecoration(0, 20.asPx))
+        loadList()
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(500)
+            binding.adContainer.implBanner(AdsType.NEWS_BANNER, true)
+        }
+        showRandomInterstitial(this, PrefsUtil.fullAdsExtraProbability)
+    }
+
+    private fun loadList() {
+        snack?.dismiss()
+        if (Network.isConnected)
+            lifecycleScope.launch {
+                NewsRepository.getNews(getCategory()) { isEmpty, cause ->
+                    if (isEmpty) {
+                        Log.e("News", "Error loading: $cause")
+                        binding.error.visibility = View.VISIBLE
+                        snack = binding.recycler.showSnackbar("Error al cargar noticias: $cause", Snackbar.LENGTH_INDEFINITE, "reintentar") {
+                            loadList()
+                        }
+                    } else {
+                        binding.error.visibility = View.GONE
+                        binding.recycler.scheduleLayoutAnimation()
+                    }
+                    runOnUiThread { binding.refresh.isRefreshing = false }
+                }.collect {
+                    adapter.submitData(PagingData.empty())
+                    adapter.submitData(it)
+                }
+            }
+        else {
+            snack = binding.recycler.showSnackbar("Sin internet", Snackbar.LENGTH_INDEFINITE)
+        }
+    }
+
+    private fun getCategory(): String {
+        return when (model.selectedFilter) {
+            1 -> "anime"
+            2 -> "cultura-otaku"
+            3 -> "japon"
+            4 -> "live-action"
+            5 -> "manga"
+            else -> "noticias/"
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_news_filters, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    @SuppressLint("CheckResult")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        MaterialDialog(this, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            lifecycleOwner(this@MaterialNewsActivity)
+            title(text = "Filtros")
+            setPeekHeight(99999999)
+            listItemsSingleChoice(
+                items = model.filtersList,
+                initialSelection = model.selectedFilter,
+                waitForPositiveButton = false
+            ) { _, index, name ->
+                binding.refresh.isRefreshing = true
+                supportActionBar?.title = name
+                model.selectedFilter = index
+                loadList()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRefresh() {
+        binding.refresh.isRefreshing = true
+        loadList()
+    }
+
+    companion object {
+        fun open(context: Context) {
+            context.startActivity(Intent(context, MaterialNewsActivity::class.java))
+        }
+    }
+}

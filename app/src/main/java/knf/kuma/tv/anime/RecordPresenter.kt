@@ -1,0 +1,22 @@
+package knf.kuma.tv.anime
+
+import android.view.ViewGroup
+import androidx.leanback.widget.Presenter
+import knf.kuma.pojos.av1.Record
+import knf.kuma.tv.cards.RecordCardView
+
+class RecordPresenter : Presenter() {
+
+    override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
+        return ViewHolder(RecordCardView(parent.context))
+    }
+
+    override fun onBindViewHolder(viewHolder: ViewHolder, item: Any?) {
+        if (item == null) return
+        (viewHolder.view as RecordCardView).bind(item as Record)
+    }
+
+    override fun onUnbindViewHolder(viewHolder: ViewHolder) {
+
+    }
+}

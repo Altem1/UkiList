@@ -1,0 +1,366 @@
+package knf.kuma.player
+
+import knf.kuma.anilist.AniListScrobbleTracker
+import android.app.PictureInPictureParams
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.graphics.Color
+import android.media.AudioManager
+import android.os.Bundle
+import android.support.v4.media.session.MediaSessionCompat
+import android.util.Rational
+import android.view.View
+import android.view.animation.AnimationUtils
+import android.widget.TextView
+import androidx.annotation.OptIn
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.session.MediaSession
+import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.preference.PreferenceManager
+import com.github.vkay94.dtpv.youtube.YouTubeOverlay
+import knf.kuma.R
+import knf.kuma.commons.EAHelper
+import knf.kuma.commons.SSLSkipper
+import knf.kuma.commons.doOnUI
+import knf.kuma.commons.noCrash
+import knf.kuma.database.CacheDB
+import knf.kuma.databinding.PlayerViewBinding
+import knf.kuma.pojos.QueueObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.anko.find
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import java.util.UUID
+
+/**
+ * Allows playback of videos that are in a playlist, using [PlayerHolder] to load the and render
+ * it to the [com.google.android.exoplayer2.ui.PlayerView] to render the video output. Supports
+ * [MediaSessionCompat] and picture in picture as well.
+ */
+
+class VideoActivity : AppCompatActivity(), PlayerHolder.PlayerCallback {
+    private lateinit var mediaSession: MediaSession
+    private val binding by lazy { PlayerViewBinding.inflate(layoutInflater) }
+    private lateinit var playerState: PlayerState
+    private lateinit var playerHolder: PlayerHolder
+    var playList: List<QueueObject> = emptyList()
+
+    private var scrobbler: AniListScrobbleTracker? = null
+    private var autoplay: NextEpisodeAutoplay? = null
+    private var isEnding = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(EAHelper.getTheme())
+        super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        setContentView(binding.root)
+        window.decorView.setBackgroundColor(Color.BLACK)
+        volumeControlStream = AudioManager.STREAM_MUSIC
+        hideUI()
+        SSLSkipper.skip()
+        initPlayer(savedInstanceState)
+    }
+
+    @OptIn(UnstableApi::class)
+    fun initPlayer(savedInstanceState: Bundle?) {
+        binding.player.resizeMode = getResizeMode()
+        find<View>(R.id.exit).onClick { onBackPressedDispatcher.onBackPressed() }
+        find<View>(R.id.lock).onClick { lock() }
+        find<View>(R.id.skip).setOnClickListener { playerHolder.skip() }
+        binding.unlock.onClick { unlock() }
+        binding.youtubeOverlay.performListener(object : YouTubeOverlay.PerformListener {
+            override fun onAnimationEnd() {
+                binding.youtubeOverlay.startAnimation(AnimationUtils.loadAnimation(this@VideoActivity, R.anim.fadeout))
+                binding.youtubeOverlay.isVisible = false
+                find<View>(R.id.exo_ll_controls).isVisible = true
+            }
+
+            override fun onAnimationStart() {
+                binding.youtubeOverlay.isVisible = true
+                binding.youtubeOverlay.startAnimation(AnimationUtils.loadAnimation(this@VideoActivity, R.anim.fadein))
+                find<View>(R.id.exo_ll_controls).isVisible = false
+            }
+        })
+        if (!intent.getBooleanExtra("isPlayList", false)) {
+            find<View>(R.id.lay_next).isVisible = false
+            find<View>(R.id.lay_prev).isVisible = false
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            playList = CacheDB.INSTANCE.queueDAO().getAllByAid(intent.getStringExtra("playlist") ?: "empty")
+            playerState = CacheDB.INSTANCE.playerStateDAO().find(intent.getStringExtra("title") ?: "???") ?: PlayerState()
+            if (savedInstanceState != null) {
+                playerState.position = savedInstanceState.getLong("position", 0)
+                playerState.window = savedInstanceState.getInt("window", 0)
+                playerState.whenReady = savedInstanceState.getBoolean("playWhenReady", true)
+            }
+            //createMediaSession()
+            withContext(Dispatchers.Main) {
+                if (isInPictureInPictureMode)
+                    binding.player.useController = false
+                createPlayer()
+                playerHolder.start()
+                autoplay?.cancel()
+                autoplay = NextEpisodeAutoplay(this@VideoActivity, lifecycleScope, binding.root as android.view.ViewGroup, intent)
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (::playerHolder.isInitialized) {
+            playerHolder.saveState()
+            outState.putInt("window", playerState.window)
+            outState.putLong("position", playerState.position)
+            outState.putBoolean("playWhenReady", playerState.whenReady)
+        }
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun lock() {
+        binding.player.hideController()
+        binding.layLocked.isVisible = true
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun unlock() {
+        binding.player.showController()
+        binding.layLocked.isVisible = false
+    }
+
+    private fun hideUI() {
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        window.addFlags(View.KEEP_SCREEN_ON)
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun getResizeMode(): Int {
+        return when (PreferenceManager.getDefaultSharedPreferences(this).getString("player_resize", "0")) {
+            "0" -> AspectRatioFrameLayout.RESIZE_MODE_FIT
+            "1" -> AspectRatioFrameLayout.RESIZE_MODE_FILL
+            "2" -> AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
+            "3" -> AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT
+            else -> AspectRatioFrameLayout.RESIZE_MODE_FIT
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (::playerHolder.isInitialized) {
+            startPlayer()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        doOnUI { hideUI() }
+        resumePlayer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (isInPictureInPictureMode)
+            resumePlayer()
+        else {
+            if (::playerHolder.isInitialized)
+                if (!playerState.isFinishing) {
+                    playerHolder.saveState()
+                    playerState.title = find<TextView>(R.id.video_title).text.toString()
+                    saveState()
+                }
+            if (!isFinishing)
+                pausePlayer()
+            else
+                stopPlayer()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Igual que en el reproductor básico: sin PiP, salir cancela el autoplay.
+        if (isEnding && !isInPictureInPictureMode && !isFinishing) {
+            autoplay?.cancel()
+            finish()
+        }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        // Autoplay: singleTask recibe el siguiente episodio aquí; se reinicia el reproductor con él.
+        super.onNewIntent(intent)
+        setIntent(intent)
+        autoplay?.cancel()
+        isEnding = false
+        stopPlayer()
+        releasePlayer()
+        if (::mediaSession.isInitialized) mediaSession.release()
+        initPlayer(null)
+    }
+
+    override fun onDestroy() {
+        autoplay?.cancel()
+        super.onDestroy()
+        stopPlayer()
+        releasePlayer()
+        if (::mediaSession.isInitialized) {
+            mediaSession.release()
+        }
+    }
+
+    private fun saveState() {
+        GlobalScope.launch(Dispatchers.IO) {
+            CacheDB.INSTANCE.playerStateDAO().set(playerState)
+        }
+    }
+
+    // MediaSession related functions.
+    private fun createMediaSession(): MediaSessionCompat = MediaSessionCompat(this, packageName).apply {
+        setFlags(MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS)
+        setCallback(object : MediaSessionCompat.Callback() {
+            override fun onPlay() {
+                super.onPlay()
+                with(playerHolder.audioFocusPlayer) {
+                    playWhenReady = true
+                }
+            }
+
+            override fun onPause() {
+                super.onPause()
+                with(playerHolder.audioFocusPlayer) {
+                    playWhenReady = false
+                }
+            }
+
+            override fun onSkipToNext() {
+                super.onSkipToNext()
+                with(playerHolder.audioFocusPlayer) {
+                    if (hasNextMediaItem())
+                        seekToNextMediaItem()
+                }
+            }
+
+            override fun onSkipToPrevious() {
+                super.onSkipToPrevious()
+                with(playerHolder.audioFocusPlayer) {
+                    if (hasPreviousMediaItem())
+                        seekToPreviousMediaItem()
+                }
+            }
+        })
+    }
+
+
+    // ExoPlayer related functions.
+    private fun createPlayer() {
+        playerHolder = PlayerHolder(this, playerState, binding.player, intent, playList)
+        scrobbler = AniListScrobbleTracker(this, intent).also { it.attach(playerHolder.audioFocusPlayer) }
+        binding.youtubeOverlay.player(playerHolder.audioFocusPlayer)
+        mediaSession = MediaSession.Builder(this, playerHolder.audioFocusPlayer)
+            .setId(UUID.randomUUID().toString()).build()
+        if (!intent.getBooleanExtra("isPlayList", false)) {
+            find<View>(R.id.exo_next).visibility = View.GONE
+            find<View>(R.id.exo_prev).visibility = View.GONE
+        }
+        //exoPlayer.overlayFrameLayout.setOnTouchListener(BVListener(this))
+    }
+
+    private fun startPlayer() {
+        if (::playerHolder.isInitialized)
+            playerHolder.start()
+    }
+
+    private fun stopPlayer() {
+        if (::playerHolder.isInitialized)
+            playerHolder.stop()
+    }
+
+    private fun resumePlayer() {
+        if (::playerHolder.isInitialized)
+            with(playerHolder.audioFocusPlayer) {
+                playWhenReady = true
+            }
+    }
+
+    private fun pausePlayer() {
+        if (::playerHolder.isInitialized)
+            with(playerHolder.audioFocusPlayer) {
+                playWhenReady = false
+            }
+    }
+
+    private fun releasePlayer() {
+        scrobbler?.detach()
+        if (::playerHolder.isInitialized)
+            playerHolder.release()
+    }
+
+    // Picture in Picture related functions.
+    override fun onUserLeaveHint() {
+        if (::playerHolder.isInitialized && playerHolder.audioFocusPlayer.playWhenReady && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            noCrash {
+                enterPictureInPictureMode(
+                    with(PictureInPictureParams.Builder()) {
+                        setAspectRatio(Rational(16, 9))
+                        build()
+                    })
+            }
+        }
+    }
+
+    override fun onPictureInPictureModeChanged(
+        isInPictureInPictureMode: Boolean,
+        newConfig: Configuration
+    ) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        if (::playerHolder.isInitialized)
+            playerHolder.saveState()
+        binding.player.useController = !isInPictureInPictureMode
+    }
+
+    override fun onChangeTitle(title: String) {
+        lifecycleScope.launch(Dispatchers.Main) { find<TextView>(R.id.video_title).text = title }
+    }
+
+    override fun onLoadingChange(loading: Boolean) {
+        with(find<View>(R.id.progress)) {
+            if (isInPictureInPictureMode)
+                post { visibility = View.GONE }
+            post { visibility = if (loading) View.VISIBLE else View.GONE }
+        }
+    }
+
+    override fun onPlayerStateChanged(state: Int) {
+        if (state == Player.STATE_READY)
+            doOnUI { hideUI() }
+        if (state == Player.STATE_ENDED && !isEnding) {
+            isEnding = true
+            val auto = autoplay
+            if (auto != null && auto.isAvailable && !isInPictureInPictureMode)
+                lifecycleScope.launch(Dispatchers.Main) { auto.onEnded { if (!isFinishing) finish() } }
+        }
+    }
+
+
+    override fun onFinish() {
+        playerState.apply {
+            title = find<TextView>(R.id.video_title).text.toString()
+            position = 0
+            isFinishing = true
+        }
+        saveState()
+        unlock()
+        //finish()
+    }
+
+
+}

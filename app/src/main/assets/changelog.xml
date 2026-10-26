@@ -1,0 +1,904 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog>
+    <release code="240" version="1.1.0">
+        <change type="new">Ventana de sincronización con AniList: carátula, avance y contador de lo sincronizado y lo que no</change>
+        <change type="new">Rewatch: volver a ver un anime completado lo marca como "Rewatching" en AniList</change>
+        <change type="new">Al abrir un anime se marcan como vistos los episodios que ya viste en AniList</change>
+        <change type="new">Excepciones de AniList en el menú lateral, con "Reintentar todo"</change>
+        <change type="new">Aviso al cambiar el estado de un anime en AniList</change>
+        <change type="new">Autoplay en el reproductor avanzado y favoritos (personajes, staff, estudios) en Perfil</change>
+        <change type="new">Banner del menú lateral con la portada de tu perfil de AniList</change>
+        <change type="change">Nuevo logo del mago y color azul-morado en toda la app</change>
+        <change type="change">Emparejamiento con AniList más tolerante (temporadas, números romanos, sinónimos)</change>
+        <change type="change">Íconos de la app en vez de emojis en Estadísticas, Perfil y Mi lista</change>
+        <change type="fix">La app se cerraba al mostrar algunos avisos (al salir, en el reproductor y al sincronizar)</change>
+    </release>
+    <release code="239" version="1.0.0">
+        <change type="new">UkiList: fork de UKIKU con sincronización automática con AniList</change>
+        <change type="new">Conectar con AniList (OAuth) desde Ajustes &gt; Sincronización</change>
+        <change type="new">Importar biblioteca de AniList: marca episodios vistos y estados de la lista</change>
+        <change type="new">Scrobble automático al ver el 85% del episodio o al terminarlo</change>
+        <change type="new">Marcar o desmarcar episodios a mano sincroniza el progreso con AniList</change>
+        <change type="new">Nube de sincronización por episodio y pantalla de excepciones de AniList</change>
+        <change type="new">Sección AniList en el menú: listas, Estadísticas y Perfil con medallas</change>
+        <change type="new">Autoplay del siguiente episodio estilo Netflix con cuenta regresiva y cambio de servidor</change>
+        <change type="new">Los estados del anime (Viendo, Considerando, etc.) se suben a AniList</change>
+        <change type="change">Nuevo nombre e ícono, Acerca de con créditos y licencia MIT de UKIKU</change>
+        <change type="change">Sin Noticias ni FAQ en el menú</change>
+    </release>
+    <release code="238" version="6.0.8">
+        <change type="fix">Error al mostrar estado y día de emisión en información del anime</change>
+        <change type="fix">Errores varios</change>
+    </release>
+    <release code="237" version="6.0.7">
+        <change type="fix">Error al abrir información de anime en TV</change>
+    </release>
+    <release code="236" version="6.0.6">
+        <change type="new">Servidor TransferIt</change>
+        <change type="change">Soporte para calendario sin conexión</change>
+        <change type="fix">Error al reproducir Zilla</change>
+        <change type="fix">Error al abrir información de anime sin conexión (Solo anteriormente visitados)</change>
+    </release>
+    <release code="235" version="6.0.4">
+        <change type="fix">Error al abrir información de anime en TV</change>
+    </release>
+    <release code="234" version="6.0.3">
+        <change type="fix">Errores varios</change>
+    </release>
+    <release code="233" version="6.0.2">
+        <change type="fix">Errores varios</change>
+    </release>
+    <release code="232" version="6.0.1">
+        <change type="fix">Error al migrar en algunos casos</change>
+    </release>
+    <release code="231" version="6.0.0">
+        <change type="change">Cambio de fuente a AnimeAv1</change>
+        <change type="new">Migración desde Animeflv</change>
+    </release>
+    <release code="230" version="5.3.21">
+        <change type="change">Mas información del mantenimiento</change>
+    </release>
+    <release code="229" version="5.3.20">
+        <change type="new">Mensaje de mantenimiento</change>
+    </release>
+    <release code="229" version="5.3.19">
+        <change type="fix">Mejoras StreamWish</change>
+        <change type="fix">Error al mostrar lista de recientes en modo "Home"</change>
+    </release>
+    <release code="228" version="5.3.18">
+        <change type="fix">Correcciones generales</change>
+    </release>
+    <release code="227" version="5.3.17">
+        <change type="fix">Corrección servidor StreamWish</change>
+    </release>
+    <release code="226" version="5.3.16">
+        <change type="change">Prevenir error al descargar actualización</change>
+    </release>
+    <release code="225" version="5.3.15">
+        <change type="change">Enlaces de telegram actualizados</change>
+    </release>
+    <release code="224" version="5.3.14">
+        <change type="fix">Corrección StreamWish</change>
+        <change type="fix">Corrección imágenes en explorador</change>
+        <change type="fix">Error al reproducir videos en el reproductor interno en algunos casos</change>
+    </release>
+    <release code="223" version="5.3.13">
+        <change type="fix">Error al descargar en algunos dispositivos</change>
+    </release>
+    <release code="222" version="5.3.12">
+        <change type="fix">Corrección de imágenes</change>
+        <change type="fix">Error al obtener lista de recientes en algunos casos</change>
+    </release>
+    <release code="221" version="5.3.11">
+        <change type="fix">Corrección servidor StreamWish</change>
+    </release>
+    <release code="220" version="5.3.10">
+        <change type="fix">Corrección de imágenes en recientes</change>
+        <change type="change">Soporte Android 16</change>
+    </release>
+    <release code="219" version="5.3.9">
+        <change type="fix">Corrección en login de firebase</change>
+        <change type="fix">Correcciónes generales para Android 15</change>
+    </release>
+    <release code="218" version="5.3.8">
+        <change type="fix">Corrección en noticias</change>
+    </release>
+    <release code="217" version="5.3.7">
+        <change type="fix">Corrección StreamWish</change>
+        <change type="fix">Corrección comentarios</change>
+    </release>
+    <release code="216" version="5.3.6">
+        <change type="fix">Corrección StreamWish</change>
+        <change type="fix">Mejora de conexión para CAST</change>
+    </release>
+    <release code="215" version="5.3.5">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Corrección StreamWish</change>
+        <change type="fix">Eliminar librerias sin usar</change>
+    </release>
+    <release code="214" version="5.3.4">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="213" version="5.3.3">
+        <change type="fix">Error al reproducir en TV</change>
+    </release>
+    <release code="212" version="5.3.2">
+        <change type="fix">Error en streaming iniciado desde informacion de anime</change>
+        <change type="fix">Error al obtener información de animes con comillas en el nombre</change>
+    </release>
+    <release code="211" version="5.3.1">
+        <change type="fix">Error en descargas</change>
+    </release>
+    <release code="210" version="5.3.0">
+        <change type="change">Soporte Android 14</change>
+        <change type="fix">Corrección de bugs</change>
+    </release>
+    <release code="209" version="5.2.11">
+        <change type="fix">Corrección especifica para Xiaomi de SSL</change>
+        <change type="fix">Corrección de bugs</change>
+    </release>
+    <release code="208" version="5.2.10">
+        <change type="fix">Corrección de SSL para telefonos sin GPlay</change>
+    </release>
+    <release code="207" version="5.2.9">
+        <change type="fix">Corrección de Streamwish para algunos capitulos viejos</change>
+    </release>
+    <release code="206" version="5.2.8">
+        <change type="fix">Corrección de bugs</change>
+    </release>
+    <release code="205" version="5.2.7">
+        <change type="fix">Corrección StreamWish</change>
+    </release>
+    <release code="204" version="5.2.6">
+        <change type="fix">Error al mostrar dialogo de actualizacion</change>
+        <change type="fix">Error en bypass</change>
+    </release>
+    <release code="203" version="5.2.5">
+        <change type="fix">Error en bypass</change>
+    </release>
+    <release code="202" version="5.2.4">
+        <change type="fix">Error en bypass</change>
+    </release>
+    <release code="200" version="5.2.1">
+        <change type="new">Servidor Streamwish (Solo streaming)</change>
+        <change type="change">Mensaje de error para error desconocido en Peru</change>
+        <change type="change">Soporte mejorado para Okru y Yourupload</change>
+    </release>
+    <release code="199" version="5.2.1">
+        <change type="fix">Error al expandir texto en informacion de anime</change>
+        <change type="fix">Error al buscar imagenes de mejor calidad</change>
+    </release>
+    <release code="198" version="5.2.0">
+        <change type="fix">Error al verificar suscripciones</change>
+    </release>
+    <release code="197" version="5.1.28">
+        <change type="fix">Error en backup local</change>
+    </release>
+    <release code="196" version="5.1.27">
+        <change type="fix">Error al iniciar en TV</change>
+    </release>
+    <release code="195" version="5.1.26">
+        <change type="fix">Correccion para noticias</change>
+    </release>
+    <release code="194" version="5.1.25">
+        <change type="fix">Correccion para Android 12</change>
+    </release>
+    <release code="193" version="5.1.24">
+        <change type="fix">Imagenes de noticias</change>
+    </release>
+    <release code="192" version="5.1.23">
+        <change type="new">Servidor SBVideo</change>
+    </release>
+    <release code="191" version="5.1.22">
+        <change type="fix">Error al guardar progreso en reproductor interno</change>
+    </release>
+    <release code="190" version="5.1.21">
+        <change type="fix">Botón de pausa en reproductor interno</change>
+    </release>
+    <release code="189" version="5.1.20">
+        <change type="change">Diagnostico reflejara el bypass en estado general</change>
+        <change type="fix">Servidor stape</change>
+    </release>
+    <release code="188" version="5.1.19">
+        <change type="fix">Arreglo en version de TV</change>
+    </release>
+    <release code="187" version="5.1.18">
+        <change type="fix">Error al mostrar imagenes en noticias</change>
+    </release>
+    <release code="186" version="5.1.17">
+        <change type="fix">Errores en login de Firestore</change>
+    </release>
+    <release code="185" version="5.1.16">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Error al mostrar noticias</change>
+    </release>
+    <release code="184" version="5.1.15">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="183" version="5.1.14">
+        <change type="fix">Mejoras de bypass</change>
+    </release>
+    <release code="182" version="5.1.13">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Mejoras de bypass para TV</change>
+    </release>
+    <release code="181" version="5.1.12">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Servidor stape</change>
+    </release>
+    <release code="180" version="5.1.11">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="179" version="5.1.10">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="178" version="5.1.9">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="177" version="5.1.8">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Error al mostrar algunas secciones en telefonos sin Play Services
+        </change>
+        <change type="fix">Error al mostrar memoria disponible en versiones de Android recientes
+        </change>
+    </release>
+    <release code="176" version="5.1.7">
+        <change type="fix">Errores generales</change>
+        <change type="change">Cambio de pagina Ukiku.app</change>
+    </release>
+    <release code="174" version="5.1.5">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Seleccion de carpeta para descargas en Android 11</change>
+        <change type="change">Mejora en creacion de bypass</change>
+        <change type="change">Mejora al cargar recientes</change>
+        <change type="change">Mejoras en explorador</change>
+    </release>
+    <release code="174" version="5.1.5">
+        <change type="fix">Errores generales</change>
+        <change type="change">Nuevo metodo de bypass</change>
+    </release>
+    <release code="173" version="5.1.4">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="172" version="5.1.3">
+        <change type="fix">Errores en servidores</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="171" version="5.1.2">
+        <change type="change">Descargar directorio para aligerar carga</change>
+        <change type="fix">Errores al abrir informacion de anime</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="170" version="5.1.1">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="169" version="5.1.0">
+        <change type="change">Optimización general</change>
+        <change type="change">Mejoras en reproductor</change>
+        <change type="change">Reproductor Experimental renombrado a Avanzado</change>
+        <change type="change">Intento para sobrepasar bloqueo 403</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="168" version="5.0.3">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="167" version="5.0.2">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="166" version="5.0.1">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="165" version="5.0.0">
+        <change type="new">Nuevo diseño de la app</change>
+        <change type="change">Agregada opcion para cambiar a diseño clasico</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="164" version="4.4.0">
+        <change type="fix">Errores generales</change>
+        <change type="change">Anuncios activados por defecto</change>
+        <change type="change">Cambios en personalización de anuncios</change>
+    </release>
+    <release code="163" version="4.3.47">
+        <change type="fix">Error al crear directorio</change>
+    </release>
+    <release code="162" version="4.3.46">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Optimizacion para anuncios generales</change>
+    </release>
+    <release code="161" version="4.3.45">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Optimizacion para anuncios en listas</change>
+    </release>
+    <release code="160" version="4.3.44">
+        <change type="fix">Errores generales</change>
+        <change type="new">Servidor GoCDN</change>
+        <change type="new">Servidor Stape</change>
+    </release>
+    <release code="159" version="4.3.43">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="158" version="4.3.42">
+        <change type="fix">Error al detectar numero de episodio en explorador</change>
+    </release>
+    <release code="157" version="4.3.41">
+        <change type="fix">Error al detectar episodios en explorador</change>
+    </release>
+    <release code="156" version="4.3.40">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="155" version="4.3.39">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="154" version="4.3.38">
+        <change type="fix">Error al detectar capitulos descargados en Android 10</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="153" version="4.3.37">
+        <change type="change">Barra de estado con aviso para creacion de directorio</change>
+        <change type="change">Avisos mas claros cuando falta permiso de almacenamiento</change>
+        <change type="fix">Error al reproducir animes descargados en reproductor interno</change>
+        <change type="fix">Error al marcar como visto desde explorador</change>
+        <change type="fix">Error al desmarcar como visto en algunas secciones</change>
+    </release>
+    <release code="152" version="4.3.36">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="151" version="4.3.35">
+        <change type="fix">Error al detectar capitulos descargados</change>
+    </release>
+    <release code="150" version="4.3.34">
+        <change type="fix">Mensajes de error al otorgar permiso de almacenamiento</change>
+        <change type="fix">Errores por cambio en Animeflv</change>
+    </release>
+    <release code="149" version="4.3.33">
+        <change type="change">Comentarios por Disqus</change>
+        <change type="fix">Fembed revivido</change>
+    </release>
+    <release code="148" version="4.3.32">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="147" version="4.3.31">
+        <change type="change">Servidor Fembed revivido</change>
+    </release>
+    <release code="146" version="4.3.30">
+        <change type="new">Servidor ZippyShare</change>
+    </release>
+    <release code="145" version="4.3.29">
+        <change type="fix">Error al reproducir izanagi en ALGUNOS episodios</change>
+    </release>
+    <release code="144" version="4.3.28">
+        <change type="fix">Error al abrir animes con modo Home</change>
+    </release>
+    <release code="143" version="4.3.27">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="142" version="4.3.26">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="141" version="4.3.25">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="140" version="4.3.24">
+        <change type="fix">Error en explorador - Android 10</change>
+    </release>
+    <release code="139" version="4.3.23">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="138" version="4.3.22">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="137" version="4.3.21">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="136" version="4.3.20">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="135" version="4.3.19">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="134" version="4.3.18">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="133" version="4.3.17">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="132" version="4.3.16">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="131" version="4.3.15">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="130" version="4.3.14">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="129" version="4.3.13">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="128" version="4.3.12">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="127" version="4.3.11">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="126" version="4.3.10">
+        <change type="fix">Errores generales</change>
+        <change type="new">Seccion FAQ (Preguntas frecuentes)</change>
+    </release>
+    <release code="125" version="4.3.9">
+        <change type="fix">Errores generales</change>
+        <change type="new">Suscripcion para Firestore sin anuncios</change>
+    </release>
+    <release code="124" version="4.3.8">
+        <change type="fix">Error al reproducir en modo TV</change>
+    </release>
+    <release code="123" version="4.3.7">
+        <change type="fix">Errores generales</change>
+        <change type="new">Suscripcion para Firestore sin anuncios</change>
+    </release>
+    <release code="122" version="4.3.6">
+        <change type="fix">Errores generales</change>
+        <change type="change">Overlay para mejorar visibilidad de botones en informacion de anime
+        </change>
+    </release>
+    <release code="121" version="4.3.5">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="120" version="4.3.4">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="119" version="4.3.3">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Error al notificar recientes</change>
+    </release>
+    <release code="118" version="4.3.2">
+        <change type="fix">Errores generales</change>
+        <change type="new">UI mas compacta en pantalla de backups</change>
+        <change type="new">Top de videos vistos</change>
+    </release>
+    <release code="117" version="4.3.1">
+        <change type="fix">Modo obscuro por defecto para Android 10</change>
+        <change type="fix">Error al obtener monedas en algunos telefonos</change>
+    </release>
+    <release code="116" version="4.3">
+        <change type="fix">Errores generales</change>
+        <change type="new">Anuncios opcionales</change>
+        <change type="new">Método de backup Firestore</change>
+        <change type="new">Modo family friendly</change>
+        <change type="new">Moneda de la app loli-coins</change>
+        <change type="change">Nuevo servidor VeryStream</change>
+    </release>
+    <release code="114" version="4.2.10">
+        <change type="fix">Errores generales</change>
+        <change type="change">Mejoras en interfaz de TV</change>
+    </release>
+    <release code="113" version="4.2.9">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="112" version="4.2.8">
+        <change type="fix">Errores generales</change>
+        <change type="change">Opción para ocultar animes nuevos en "Home"</change>
+    </release>
+    <release code="111" version="4.2.7">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="110" version="4.2.6">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="109" version="4.2.5">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="108" version="4.2.4">
+        <change type="fix">Errores generales</change>
+        <change type="change">Estructura interna de respaldos mejorado</change>
+        <change type="change">Método de respaldo local (memoria interna)</change>
+    </release>
+    <release code="107" version="4.2.3">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="106" version="4.2.2">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="105" version="4.2.1">
+        <change type="fix">Errores generales</change>
+        <change type="new">Barra de estado para Animeflv</change>
+    </release>
+    <release code="104" version="4.2">
+        <change type="fix">Errores generales</change>
+        <change type="new">Estilo home para recientes</change>
+        <change type="new">Botón para saltar 1:30m en CAST (OP y ED)</change>
+    </release>
+    <release code="103" version="4.1">
+        <change type="fix">Errores generales</change>
+        <change type="new">Prueba rapida de velocidad en diagnostico</change>
+        <change type="new">Soporte previo para Android Q</change>
+        <change type="change">Filtros de busqueda mejorados</change>
+        <change type="change">Comentarios mejorados</change>
+        <change type="change">Lista de descargas mejorada</change>
+    </release>
+    <release code="102" version="4.0.4">
+        <change type="fix">Errores generales</change>
+        <change type="new">Servidor Fembed</change>
+        <change type="change">Restaurar compras al entrar a la pantalla del easter egg</change>
+    </release>
+    <release code="101" version="4.0.3">
+        <change type="fix">Errores generales en TV</change>
+    </release>
+    <release code="100" version="4.0.2">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="99" version="4.0.1">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="98" version="4.0">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Errores en TV</change>
+        <change type="fix">Errores en respaldos</change>
+        <change type="fix">Errores en autobackup</change>
+        <change type="change">Cambios al diseño para MD2</change>
+        <change type="change">Nuevo dato en informacion: "Seguidores"</change>
+        <change type="change">Optimizacion general (sobre todo en sugeridos)</change>
+        <change type="change">Google Drive deshabilitado</change>
+        <change type="new">Categoría pausado en seguidos</change>
+        <change type="new">Recordar último servidor</change>
+        <change type="new">Descarga por lotes</change>
+        <change type="new">Añadir a cola por lotes</change>
+        <change type="new">Preview al avanzar en reproductor experimental</change>
+        <change type="new">Opcion para usar proxy en CAST</change>
+    </release>
+    <release code="97" version="3.1.6">
+        <change type="fix">Errores generales</change>
+        <change type="change">Material Design 2</change>
+        <change type="change">Mejora de carga en historial</change>
+        <change type="new">Pantalla de diagnóstico en informacion de la app</change>
+    </release>
+    <release code="96" version="3.1.6">
+        <change type="fix">Errores generales</change>
+        <change type="new">Opción para subir tiempo de espera de conexión (timeout)</change>
+    </release>
+    <release code="95" version="3.1.5">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="94" version="3.1.4">
+        <change type="fix">Errores generales</change>
+        <change type="change">Opción para comprar pasos de Easter egg</change>
+        <change type="new">Mostrar todas las imágenes disponibles de MAL</change>
+    </release>
+    <release code="93" version="3.1.3">
+        <change type="fix">Errores de bypass en TV</change>
+        <change type="new">Mensajes de servicio</change>
+    </release>
+    <release code="92" version="3.1.2">
+        <change type="fix">Errores de bypass en TV</change>
+    </release>
+    <release code="91" version="3.1.1">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="90" version="3.1">
+        <change type="fix">Errores generales</change>
+        <change type="new">Indicador de favoritos en emisión</change>
+    </release>
+    <release code="89" version="3.0.15">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="88" version="3.0.14">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="87" version="3.0.13">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="86" version="3.0.12">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="85" version="3.0.11">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="84" version="3.0.10">
+        <change type="fix">Errores generales</change>
+        <change type="new">Soporte para multiples idiomas en algunos animes</change>
+    </release>
+    <release code="83" version="3.0.9">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="82" version="3.0.8">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="81" version="3.0.7">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="80" version="3.0.6">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="79" version="3.0.5">
+        <change type="fix">Errores generales</change>
+        <change type="change">Mejora en imagen de Splash</change>
+    </release>
+    <release code="78" version="3.0.4">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="77" version="3.0.3">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="76" version="3.0.2">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="71" version="3.0.1">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Errores con algunos logros</change>
+        <change type="change">Mejoras esteticas para modo claro en Android 8+</change>
+        <change type="changes">Mejora de modo cuadrícula para teléfonos anchos y tablets</change>
+    </release>
+    <release code="70" version="3.0">
+        <change type="fix">Errores generales</change>
+        <change type="new">Logros</change>
+        <change type="changes">Mejoras generales</change>
+        <change type="change">Tema claro mejorado</change>
+        <change type="change">Cambios con Material Design 2</change>
+    </release>
+    <release code="69" version="2.2">
+        <change type="fix">Errores generales</change>
+        <change type="new">Sección simple de noticias</change>
+    </release>
+    <release code="68" version="2.1.1">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Arreglos menores con CAST</change>
+        <change type="change">Mejora en imagenes de error en siguiendo</change>
+    </release>
+    <release code="67" version="2.1">
+        <change type="fix">Errores generales</change>
+        <change type="change">Mejoras graficas en algunas partes</change>
+        <change type="change">Mejoras al modificar categorias en favoritos</change>
+        <change type="new">Opcion para cambiar tono de notificación en recientes</change>
+        <change type="new">Seccion de Siguiendo recreada</change>
+    </release>
+    <release code="66" version="2.0.2">
+        <change type="fix">Error en pantalla de actualización</change>
+    </release>
+    <release code="65" version="2.0.1">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Errores en Android TV</change>
+    </release>
+    <release code="64" version="2.0">
+        <change type="fix">Errores generales</change>
+        <change type="new">Migración de Java a Kotlin</change>
+        <change type="new">Mejoras de estabilidad</change>
+        <change type="new">Launch screen al iniciar la app</change>
+        <change type="change">Algunos dialogos cambiados a snackbar</change>
+    </release>
+    <release code="63" version="1.9.6">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="62" version="1.9.5">
+        <change type="fix">Errores generales</change>
+        <change type="new">Botón en reproductor para saltar 1:25min(Oppening)</change>
+        <change type="new">Carátula del anime en notificacion de reciente</change>
+        <change type="change">Mejora al ocultar barras en reproductor interno</change>
+    </release>
+    <release code="61" version="1.9.4">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="60" version="1.9.3">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="59" version="1.9.2">
+        <change type="fix">Errores generales</change>
+        <change type="new">Opción para auto respaldar periodicamente</change>
+    </release>
+    <release code="58" version="1.9.1">
+        <change type="fix">Errores generales</change>
+        <change type="change">Botón cast en información de anime</change>
+        <change type="change">Filtrado por ID en directorio</change>
+    </release>
+    <release code="57" version="1.9">
+        <change type="fix">Errores generales</change>
+        <change type="new">Importacion multiple</change>
+        <change type="change">Cambio en easteregg, se necesita completar de nuevo</change>
+    </release>
+    <release code="56" version="1.8.1">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="55" version="1.8">
+        <change type="fix">Errores generales</change>
+        <change type="new">Indicadores numericos en algunas partes de la app</change>
+        <change type="change">Migración a librerias androidx</change>
+    </release>
+    <release code="54" version="1.7.5">
+        <change type="fix">Errores generales</change>
+        <change type="change">Cambiar administrador de descargas</change>
+        <change type="change">Mejora en notificaciones de descarga</change>
+        <change type="change">Mejora en iconos de atajos</change>
+    </release>
+    <release code="53" version="1.7.4">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="52" version="1.7.3">
+        <change type="fix">Errores generales</change>
+        <change type="new">Servidor Fenix</change>
+        <change type="new">Servidor Natsuki</change>
+        <change type="change">Las descargas ahora mostraran tiempo restante y velocidad de
+            descarga
+        </change>
+    </release>
+    <release code="51" version="1.7.2">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="50" version="1.7.1">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="49" version="1.7">
+        <change type="fix">Errores generales</change>
+        <change type="new">Administrador de descargas rehecho</change>
+        <change type="change">Descargas paralelas</change>
+        <change type="change">Pausar descargas</change>
+        <change type="change">Tiempo estimado de descarga</change>
+    </release>
+    <release code="48" version="1.6.1">
+        <change type="fix">Errores generales</change>
+        <change type="new">Configurar buffer de descarga</change>
+        <change type="change">Mejoras al importar</change>
+    </release>
+    <release code="47" version="1.6">
+        <change type="fix">Errores generales</change>
+        <change type="new">Importar videos a la app</change>
+        <change type="new">Descarga/Streaming desde notificacion de reciente</change>
+        <change type="change">Mejoras generales</change>
+    </release>
+    <release code="46" version="1.5">
+        <change type="fix">Errores generales</change>
+        <change type="new">Compartir links de episodios</change>
+        <change type="new">Descarga/Streaming abriendo links de episodios</change>
+    </release>
+    <release code="45" version="1.4.7">
+        <change type="change">Se podra añadir animes a seguidos y favoritos</change>
+    </release>
+    <release code="44" version="1.4.6">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="43" version="1.4.5">
+        <change type="fix">Errores generales</change>
+        <change type="new">Servidor Mango</change>
+    </release>
+    <release code="42" version="1.4.4">
+        <change type="fix">Error en preview de episodio</change>
+    </release>
+    <release code="41" version="1.4.3">
+        <change type="fix">Errores en explorador</change>
+        <change type="fix">Error al mostrar algunas imagenes</change>
+    </release>
+    <release code="40" version="1.4.2">
+        <change type="new">Servidor Mp4Upload (Gracias raulhaag)</change>
+        <change type="change">Tiempo reducido al obtener lista de animes en explorador</change>
+    </release>
+    <release code="39" version="1.4.1">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Errores en RV</change>
+        <change type="change">Servidor Izanagi restaurado</change>
+    </release>
+    <release code="38" version="1.4">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Errores en OKRU y RV</change>
+        <change type="new">Categorias en favoritos</change>
+    </release>
+    <release code="37" version="1.3.8">
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="36" version="1.3.7">
+        <change type="fix">Seccion emision</change>
+        <change type="fix">Errores generales</change>
+        <change type="change">Migracion de datos mejorada</change>
+    </release>
+    <release code="35" version="1.3.6">
+        <change type="fix">Obtencion de imagenes de episodios</change>
+        <change type="change">Opción para deshabilitar progreso en pantalla</change>
+    </release>
+    <release code="34" version="1.3.5">
+        <change type="fix">Obtencion de lista de episodios</change>
+        <change type="new">Progreso de descarga en recientes y lista de episodios</change>
+    </release>
+    <release code="33" version="1.3.4">
+        <change type="fix">Notificacion persistente al crear/recrear directorio</change>
+    </release>
+    <release code="32" version="1.3.3">
+        <change type="fix">Error en listar episodios de animes largos</change>
+    </release>
+    <release code="31" version="1.3.2">
+        <change type="fix">Errores en Cast</change>
+    </release>
+    <release code="30" version="1.3.1">
+        <change type="fix">Errores generales en Android TV</change>
+    </release>
+    <release code="29" version="1.3">
+        <change type="fix">Errores generales</change>
+        <change type="new">Diseño especial para Android TV</change>
+    </release>
+    <release code="28" version="1.2.5">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Servidor RV</change>
+        <change type="change">Mejora en pendientes</change>
+    </release>
+    <release code="27" version="1.2.4">
+        <change type="change">Mejora en explorador</change>
+    </release>
+    <release code="26" version="1.2.3">
+        <change type="fix">Error en nombre de animes</change>
+        <change type="new">Soporte para Android TV</change>
+    </release>
+    <release code="25" version="1.2.2">
+        <change type="fix">Errores generales</change>
+        <change type="fix">Error al hacer cast de archivos locales</change>
+    </release>
+    <release code="24" version="1.2.1">
+        <change type="fix">Servidor Mega duplicado</change>
+        <change type="fix">Servidor Fire corregido</change>
+        <change type="change">Marcar episodios pendientes como vistos y el ultimo es añadido a
+            historial
+        </change>
+    </release>
+    <release code="23" version="1.2">
+        <change type="fix">Errores generales</change>
+        <change type="new">Cola de reproducción</change>
+    </release>
+    <release code="22" version="1.1.1">
+        <change type="fix">Error de colores</change>
+        <change type="fix">Error al abrir informacion de animes sin conexion</change>
+    </release>
+    <release code="21" version="1.1">
+        <change type="new">Click largo en emisión para ocultar</change>
+        <change type="new">Widget de emisión agregado</change>
+        <change type="new">Abrir pantalla de genero desde informacion de anime</change>
+        <change type="new">Easter egg agregado, pista: "easteregg"</change>
+        <change type="change">Modo PIP en reproductor mejorado</change>
+        <change type="change">Explorador optimizado</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="20" version="1.0">
+        <change type="change">Version final</change>
+        <change type="new">Accesos directos en launcher</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="19" version="0.4.2 beta">
+        <change type="change">Agregada mas informacion en acerca de</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="18" version="0.4.1 beta">
+        <change type="fix">Error al notificar animes nuevos</change>
+    </release>
+    <release code="17" version="0.4 beta">
+        <change type="new">Seccion de sugerencias</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="16" version="0.3.12 beta">
+        <change type="fix">Icono arreglado para algunos telefonos</change>
+    </release>
+    <release code="15" version="0.3.11 beta">
+        <change type="fix">Bypass de cloudflare agregado</change>
+        <change type="change">Boton cast en explorador ahora abre controles</change>
+    </release>
+    <release code="14" version="0.3.10 beta">
+        <change type="new">Pantalla de informacion</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="12" version="0.3.9 beta">
+        <change type="fix">Error al actualizar app en Android 5 y 6</change>
+    </release>
+    <release code="11" version="0.3.8 beta">
+        <change type="new">Pantalla para descargas activas (Explorador>Descargas)</change>
+    </release>
+    <release code="10" version="0.3.7 beta">
+        <change type="fix">Error al migrar datos</change>
+    </release>
+    <release code="9" version="0.3.6 beta">
+        <change type="new">Sincronizacion en la nube (Dropbox y Google Drive)</change>
+        <change type="new">Migración de favoritos desde AnimeflvApp</change>
+        <change type="fix">Errores en explorador al girar la pantalla</change>
+    </release>
+    <release code="8" version="0.3.5 beta">
+        <change type="new">Cast de episodios descargados</change>
+        <change type="fix">Error al abrir la app sin conexión</change>
+        <change type="fix">Errores generales</change>
+    </release>
+    <release code="7" version="0.3.4 beta">
+        <change type="new">Changelog</change>
+        <change type="new">Sección de animes random</change>
+        <change type="fix">Errores generales</change>
+    </release>
+</changelog>

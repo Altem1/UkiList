@@ -40,6 +40,7 @@ import knf.kuma.commons.distinct
 import knf.kuma.commons.doOnUI
 import knf.kuma.commons.getSurfaceColor
 import knf.kuma.commons.isFullMode
+import knf.kuma.commons.optionalBind
 import knf.kuma.commons.load
 import knf.kuma.commons.noCrash
 import knf.kuma.commons.roundedString
@@ -67,6 +68,9 @@ import java.util.concurrent.atomic.AtomicReference
 class AnimeChaptersAdapterMaterial(private val fragment: Fragment, private val recyclerView: RecyclerView, val anime: DirectoryAV1, val chapters: List<Chapter>, private val touchListener: DragSelectTouchListener, val isMaterial: Boolean) : RecyclerView.Adapter<AnimeChaptersAdapterMaterial.ChapterImgHolder>(), FastScrollRecyclerView.SectionedAdapter {
 
     private val context: Context? = fragment.context
+    /** Dentro de la ficha hub se usan tarjetas redondeadas con título/sinopsis y botón de descarga. */
+    private val isHub = fragment.activity is knf.kuma.animeinfo.hub.AnimeHubActivity
+    private val episodeMeta get() = (fragment.activity as? knf.kuma.animeinfo.hub.AnimeHubActivity)?.episodeMeta?.value ?: emptyMap()
     private val recordsDAO = CacheDB.INSTANCE.recordAV1DAO()
     private val seeingDAO = CacheDB.INSTANCE.organizerDAO()
     private val downloadsDAO = CacheDB.INSTANCE.downloadsDAO()
@@ -109,15 +113,15 @@ class AnimeChaptersAdapterMaterial(private val fragment: Fragment, private val r
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChapterImgHolder {
-        return ChapterImgHolder(LayoutInflater.from(parent.context).inflate(if (isMaterial) R.layout.item_chapter_preview_material else R.layout.item_chapter_preview, parent, false))
+        return ChapterImgHolder(LayoutInflater.from(parent.context).inflate(if (isHub) R.layout.item_chapter_hub else if (isMaterial) R.layout.item_chapter_preview_material else R.layout.item_chapter_preview, parent, false))
     }
 
     override fun onBindViewHolder(holder: ChapterImgHolder, position: Int, payloads: MutableList<Any>) {
         if (context != null)
             if (selection.contains(position))
-                holder.cardView.setBackgroundColor(ContextCompat.getColor(context, EAHelper.getThemeColorLight()))
+                holder.paint(ContextCompat.getColor(context, EAHelper.getThemeColorLight()))
             else
-                holder.cardView.setBackgroundColor(fragment.getSurfaceColor())
+                holder.paint(fragment.getSurfaceColor())
         if (payloads.contains(PAYLOAD_SYNC))
             holder.bindSync(chapters[position])
         if (payloads.isEmpty())
@@ -128,9 +132,9 @@ class AnimeChaptersAdapterMaterial(private val fragment: Fragment, private val r
         if (context == null) return
         val chapter = chapters[position]
         if (selection.contains(position))
-            holder.cardView.setBackgroundColor(ContextCompat.getColor(context, EAHelper.getThemeColorLight()))
+            holder.paint(ContextCompat.getColor(context, EAHelper.getThemeColorLight()))
         else
-            holder.cardView.setBackgroundColor(fragment.getSurfaceColor())
+            holder.paint(fragment.getSurfaceColor())
         if (processingPosition == holder.bindingAdapterPosition) {
             holder.progressBar.isIndeterminate = true
             holder.progressBarRoot.visibility = View.VISIBLE
@@ -188,6 +192,12 @@ class AnimeChaptersAdapterMaterial(private val fragment: Fragment, private val r
         holder.separator.visibility = if (position == 0) View.GONE else View.VISIBLE
         holder.bindSync(chapter)
         holder.chapter.text = chapter.name
+        if (isHub) {
+            val meta = episodeMeta[chapter.number.toInt()].takeIf { chapter.number % 1.0 == 0.0 }
+            holder.epTitle?.apply { text = meta?.title; visibility = if (meta?.title.isNullOrBlank()) View.GONE else View.VISIBLE }
+            holder.epSynopsis?.apply { text = meta?.synopsis; visibility = if (meta?.synopsis.isNullOrBlank()) View.GONE else View.VISIBLE }
+            holder.hubDownload?.setOnClickListener { startDownload(holder, chapter) }
+        }
         if (!isFullMode)
             holder.actions.visibility = View.GONE
         else
@@ -261,28 +271,7 @@ class AnimeChaptersAdapterMaterial(private val fragment: Fragment, private val r
                                 }
                                 negativeButton(text = "CANCELAR")
                             }
-                            R.id.download -> {
-                                setOrientation(true)
-                                FileActions.download(fragment, anime, chapter) { state, _ ->
-                                    when (state) {
-                                        FileActions.CallbackState.START_DOWNLOAD -> {
-                                            fragment.lifecycleScope.launch(Dispatchers.Main) {
-                                                holder.progressBar.isIndeterminate = true
-                                                holder.progressBarRoot.visibility = View.VISIBLE
-                                                holder.setQueue(withContext(Dispatchers.IO){ CacheDB.INSTANCE.queueDAO().isInQueue(chapter.eid.toString()) }, true)
-                                                chapter.fileWrapper(anime).exist = true
-                                            }
-                                        }
-
-                                        else -> {
-                                            fragment.doOnUI {
-                                                holder.progressBarRoot.visibility = View.GONE
-                                            }
-                                        }
-                                    }
-                                    setOrientation(false)
-                                }
-                            }
+                            R.id.download -> startDownload(holder, chapter)
                             R.id.streaming -> {
                                 setOrientation(true)
                                 FileActions.stream(fragment, anime, chapter) { state, extra ->
@@ -364,6 +353,13 @@ class AnimeChaptersAdapterMaterial(private val fragment: Fragment, private val r
             touchListener.startDragSelection(holder.adapterPosition)
             true
         }
+        // En la ficha hub: sin menú de 3 puntos y tocar la tarjeta reproduce el episodio.
+        if (isHub) {
+            holder.actions.visibility = View.GONE
+            holder.cardView.setOnClickListener {
+                (fragment as? knf.kuma.animeinfo.fragments.ChaptersFragmentMaterial)?.playChapter(anime, chapter)
+            }
+        }
     }
 
     override fun getSectionName(position: Int): String {
@@ -395,6 +391,29 @@ class AnimeChaptersAdapterMaterial(private val fragment: Fragment, private val r
 
     override fun getItemCount(): Int {
         return chapters.size
+    }
+
+    private fun startDownload(holder: ChapterImgHolder, chapter: Chapter) {
+        setOrientation(true)
+        FileActions.download(fragment, anime, chapter) { state, _ ->
+            when (state) {
+                FileActions.CallbackState.START_DOWNLOAD -> {
+                    fragment.lifecycleScope.launch(Dispatchers.Main) {
+                        holder.progressBar.isIndeterminate = true
+                        holder.progressBarRoot.visibility = View.VISIBLE
+                        holder.setQueue(withContext(Dispatchers.IO){ CacheDB.INSTANCE.queueDAO().isInQueue(chapter.eid.toString()) }, true)
+                        chapter.fileWrapper(anime).exist = true
+                    }
+                }
+
+                else -> {
+                    fragment.doOnUI {
+                        holder.progressBarRoot.visibility = View.GONE
+                    }
+                }
+            }
+            setOrientation(false)
+        }
     }
 
     override fun getItemId(position: Int): Long {
@@ -440,6 +459,13 @@ class AnimeChaptersAdapterMaterial(private val fragment: Fragment, private val r
         private val inDown: ImageView by itemView.bind(R.id.in_down)
         private val anilistSync: ImageView by itemView.bind(R.id.anilist_sync)
         val actions: ImageButton by itemView.bind(R.id.actions)
+        val epTitle: TextView? by itemView.optionalBind(R.id.ep_title)
+        val epSynopsis: TextView? by itemView.optionalBind(R.id.ep_synopsis)
+        val hubDownload: ImageButton? by itemView.optionalBind(R.id.hub_download)
+
+        fun paint(color: Int) {
+            (cardView as? com.google.android.material.card.MaterialCardView)?.setCardBackgroundColor(color) ?: cardView.setBackgroundColor(color)
+        }
         val progressBar: ProgressBar by itemView.bind(R.id.progress)
         val progressBarRoot: View by itemView.bind(R.id.progress_root)
 

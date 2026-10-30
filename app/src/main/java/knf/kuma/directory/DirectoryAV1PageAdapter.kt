@@ -48,7 +48,7 @@ class DirectoryAV1PageAdapter(private val context: FragmentActivity) : PagingDat
         if (animeObject?.aid != null) {
             holder.imageView.load(animeObject.imageUrl)
             holder.progressView.visibility = View.GONE
-            holder.textView.text = animeObject.name
+            knf.kuma.anilist.AniListScores.bind(holder.textView, animeObject.aid, animeObject.slug, animeObject.name)
             holder.cardView.setOnClickListener { ActivityAnimeMaterial.open(context, animeObject, holder.imageView, true) }
         } else {
             holder.progressView.visibility = View.VISIBLE

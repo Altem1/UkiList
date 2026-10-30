@@ -9,13 +9,13 @@
 
 **UkiList** (`com.altem1.ukilist`) es un fork no oficial de [UKIKU](https://github.com/jordyamc/UKIKU) que conecta la app con tu cuenta de [AniList](https://anilist.co): importa tu biblioteca, marca lo que ya viste y registra cada episodio que terminas, sin que tengas que hacer nada.
 
-**Sitio web y descarga:** https://altem1.github.io/UkiList/
+**Sitio web y descarga:** https://ukilist.altem.site/
 
 <p align="center">
-  <img src="docs/assets/shots/sync.webp" width="200" alt="Ventana de sincronización">
-  <img src="docs/assets/shots/episodios.webp" width="200" alt="Episodios con nube de sincronización">
-  <img src="docs/assets/shots/estadisticas.webp" width="200" alt="Estadísticas">
-  <img src="docs/assets/shots/perfil.webp" width="200" alt="Perfil y medallas">
+  <img src="docs/assets/shots/ficha.webp" width="200" alt="Nueva ficha de anime">
+  <img src="docs/assets/shots/episodios-hub.webp" width="200" alt="Episodios con título y sinopsis">
+  <img src="docs/assets/shots/openings.webp" width="200" alt="Openings y endings">
+  <img src="docs/assets/shots/inicio-viendo.webp" width="200" alt="Inicio">
 </p>
 
 ---
@@ -31,8 +31,28 @@
 - **Marcar y desmarcar a mano**: marcar un episodio lo sube; desmarcarlo baja el progreso en AniList al mayor episodio visto que quede.
 - **Estados de la lista**: Viendo, Considerando, Completado, Abandonado y Pausado se suben a AniList, con aviso al confirmarse.
 - **Nube por episodio**: indica si cada episodio ya está en AniList o sigue pendiente.
-- **Excepciones de AniList**: lo que no se pudo subir aparece en el menú lateral, con el motivo. Puedes reintentar todo, reintentar uno o elegir a mano el anime correcto.
-- **Emparejamiento por título**: busca el anime por rōmaji, inglés y sinónimos, y tolera variantes como "Season 2", "2nd Season" o "II". Guarda el resultado para no repetir búsquedas.
+- **Sin sincronizar**: si un anime no se encontró en AniList o algún episodio no se pudo subir, la ficha muestra un botón junto a *Viendo* para elegir a mano el anime correcto o reintentar. No desaparece hasta resolverse.
+- **Emparejamiento por título**: busca el anime por rōmaji, inglés y sinónimos, tolera variantes como "Season 2", "2nd Season" o "II", distingue películas y OVAs y usa el año de estreno. Guarda el resultado para no repetir búsquedas.
+- **Favoritos sincronizados**: el corazón de la app y los personajes favoritos se guardan también en AniList.
+
+### Ficha del anime (nueva)
+- **Estilo hub**: portada de AniList que pasa sola al **tráiler** a los 5 segundos, botón **Continuar · Episodio N** con el siguiente que te falta y botón para descargarlo.
+- **Acciones**: Favoritos, Agregar a viendo, Volver a ver (si ya lo terminaste) y Compartir con un enlace que abre la app.
+- **Descripción, géneros, temporada, año, estado y estudio**.
+- **Detalles**: puntuación de AniList, director, estudio, idiomas de doblaje, personajes y **openings/endings** con foto del artista y enlaces a YouTube, Spotify, Apple Music y YouTube Music.
+- **Episodios**: tarjetas con miniatura, **título y sinopsis en español** (AniList y Kitsu, traducidos en el teléfono), descarga y nube de sincronización. Tocar la tarjeta reproduce el episodio.
+- **Podría gustarte**: recomendaciones de AniList sin los animes que ya terminaste.
+- Se puede volver a la ficha clásica en Configuración > Personalización.
+
+### Navegación e inicio
+- **Barra inferior flotante**: Recientes, Favoritos (*Para ti*), Perfil, Directorio y Emisión.
+- **Perfil**: portada y foto de AniList, acceso a Configuración y Acerca de, y pestañas **AniList**, **Descargas** e **Historial**.
+- **Inicio**: *Últimos actualizados (viendo)* con todos tus animes en emisión, próxima emisión y puntuación; *Últimos vistos* y las secciones de siempre.
+- **% de AniList** junto al nombre de cada portada (Inicio, Directorio y Emisión).
+- **Búsqueda avanzada** en Directorio: temporada, año, estado, tipo, géneros y orden.
+- **Pestaña Para ti**: recomendaciones de AniList según tus favoritos.
+- **Modo AMOLED**: fondo negro puro con el tema oscuro.
+- Menú lateral y descargas rediseñados.
 
 ### Sección AniList
 - **Mi lista**: historial, viendo, pendientes, completados y demás listas de AniList, con progreso y puntuación. Desde ahí abres el anime en la app o en AniList.
@@ -42,11 +62,13 @@
 
 ### Reproductor
 - **Autoplay estilo Netflix**: al terminar un episodio, el actual se encoge y aparece el siguiente con cuenta regresiva. Usa el mismo servidor y, si no tiene el episodio, prueba con los demás. Funciona en el reproductor básico y en el avanzado.
+- **Saltar opening** y **miniventana al empezar el ending** con los tiempos de [AniSkip](https://aniskip.com), y botón de **siguiente episodio**.
 
 ### Además
-- Todo lo de UKIKU: recientes, emisión, catálogo, explorador, descargas, cola, historial, sugerencias, logros y temas.
+- Todo lo de UKIKU: recientes, emisión, catálogo, descargas, cola, historial, logros y temas.
+- Sin anuncios: se quitó la opción de anuncios de Configuración.
 - Logo propio (mago en pixel art) y color azul-morado por defecto.
-- Se quitaron Noticias y FAQ del menú.
+- Se quitaron Noticias, FAQ, Sugerencias, Random y Explorador del menú lateral (Explorador vive ahora en Perfil > Descargas).
 - Identificador propio (`com.altem1.ukilist`): se instala junto a UKIKU sin conflicto.
 
 ---

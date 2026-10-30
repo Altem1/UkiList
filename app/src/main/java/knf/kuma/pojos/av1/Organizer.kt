@@ -84,6 +84,10 @@ abstract class OrganizerDao {
     @get:Query("SELECT aid FROM Organizer")
     abstract val allAids: List<Int>
 
+    /** Animes en "Siguiendo" (state=1); se actualiza al cambiar el estado. */
+    @get:Query("SELECT aid FROM Organizer WHERE state=1")
+    abstract val watchingAidsFlow: Flow<List<Int>>
+
     @Query("$QUERY_ALL WHERE o.state=:state$ORDER_NAME")
     abstract fun getFlowByState(state: Int): Flow<List<OrganizerWRecord>>
 

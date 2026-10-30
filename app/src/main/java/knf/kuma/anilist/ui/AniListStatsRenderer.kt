@@ -29,7 +29,7 @@ import java.util.Date
 import kotlin.math.roundToInt
 
 /** Construye las pestañas "Estadísticas" y "Perfil" de la sección AniList (estilo AniHyou). */
-class AniListStatsRenderer(private val activity: AniListActivity, private val container: LinearLayout) {
+class AniListStatsRenderer(private val activity: androidx.appcompat.app.AppCompatActivity, private val container: LinearLayout, private val onFavourite: (AniListApi.FavouriteAnime) -> Unit) {
 
     private val ctx get() = activity
     private val nf = NumberFormat.getIntegerInstance()
@@ -261,7 +261,7 @@ class AniListStatsRenderer(private val activity: AniListActivity, private val co
                     f.cover?.let { Glide.with(cover).load(it).into(cover) }
                     addView(cover, LinearLayout.LayoutParams(dp(100), dp(145)))
                     addView(text(f.title, 12f).apply { maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END }, LinearLayout.LayoutParams(dp(100), -2))
-                    setOnClickListener { activity.openFavourite(f) }
+                    setOnClickListener { onFavourite(f) }
                 }, LinearLayout.LayoutParams(-2, -2).apply { marginEnd = dp(8) })
             }
             addView(HorizontalScrollView(ctx).apply { isHorizontalScrollBarEnabled = false; addView(strip) })

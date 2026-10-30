@@ -34,6 +34,9 @@ class DirectoryFragmentMaterial : BottomFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.findViewById<View>(R.id.btnAdvancedSearch)?.setOnClickListener {
+            knf.kuma.search.AdvancedSearchActivity.open(requireContext())
+        }
         lifecycleScope.launch(Dispatchers.IO) {
             delay(1000)
             noCrash {

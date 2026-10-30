@@ -104,9 +104,9 @@ object PrefsUtil {
         get() = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("fetch_db_reset", false)
         set(value) = PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("fetch_db_reset", value).apply()
 
+    // UkiList no muestra anuncios
     val isAdsEnabled: Boolean
-        get() = (!isSubscriptionEnabled && AdsUtils.remoteConfigs.getBoolean("ads_forced")) ||
-                PreferenceManager.getDefaultSharedPreferences(context).getBoolean("ads_enabled_new", true)
+        get() = false
 
     val downloaderType: Int
         get() = Integer.parseInt(
@@ -273,6 +273,14 @@ object PrefsUtil {
     var randomLimit: Int
         get() = PreferenceManager.getDefaultSharedPreferences(context).getInt("random_limit", 25)
         set(value) = PreferenceManager.getDefaultSharedPreferences(context).edit().putInt("random_limit", value).apply()
+
+    /** Modo AMOLED: fondo negro puro cuando el tema está en oscuro. */
+    val isAmoled: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("amoled_mode", false)
+
+    /** Ficha del anime estilo hub (nueva) en vez de la clásica. */
+    val useAnimeHub: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("anime_hub_design", true)
 
     val useHome: Boolean
         get() = PreferenceManager.getDefaultSharedPreferences(context).getString("recents_design", "0") == "1"

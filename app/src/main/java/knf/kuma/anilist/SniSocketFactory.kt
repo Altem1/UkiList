@@ -8,12 +8,12 @@ import javax.net.ssl.SSLSocketFactory
 
 /**
  * SSLSkipper (al abrir el reproductor) pone jsse.enableSNIExtension=false de forma global.
- * AniList está detrás de Cloudflare y sin SNI el handshake falla, así que lo forzamos solo aquí.
+ * AniList y animeav1 están detrás de Cloudflare y sin SNI el handshake falla, así que lo forzamos en sus clientes.
  */
-class SniSocketFactory(private val delegate: SSLSocketFactory) : SSLSocketFactory() {
+class SniSocketFactory(private val delegate: SSLSocketFactory, private val onlyFor: ((String) -> Boolean)? = null) : SSLSocketFactory() {
 
     private fun Socket.withSni(host: String?): Socket = apply {
-        if (this is SSLSocket && !host.isNullOrBlank())
+        if (this is SSLSocket && !host.isNullOrBlank() && onlyFor?.invoke(host) != false)
             sslParameters = sslParameters.apply { serverNames = listOf(SNIHostName(host)) }
     }
 

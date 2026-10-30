@@ -78,7 +78,7 @@ object FirestoreManager {
     @OptIn(ExperimentalContracts::class)
     fun start() {
         if (!isGPlayServicesEnabled() || isFirestoreEnabled) return
-        if (isLoggedIn && ((PrefsUtil.isAdsEnabled && !Network.isAdsBlocked) || BuildConfig.DEBUG || admFile.exists() || PrefsUtil.isSubscriptionEnabled)) {
+        if (isLoggedIn) {
             isFirestoreEnabled = true
             QueueManager.open()
             doAsync {
@@ -538,4 +538,4 @@ fun syncData(uploads: SyncRequest.() -> Unit) {
     val syncRequest = SyncRequest(FirestoreManager.firestoreDB.collection("users/${FirestoreManager.uid}/backupsav1"))
     uploads(syncRequest)
     syncRequest.sync()
-}
+}

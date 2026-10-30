@@ -34,6 +34,25 @@ import org.jetbrains.anko.doAsync
 
 open class GenericActivity : AppCompatActivity() {
 
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        // Modo AMOLED: encima del tema elegido (las subclases ya llamaron setTheme) pone fondos negros.
+        val night = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        appliedAmoled = knf.kuma.commons.PrefsUtil.isAmoled
+        if (night && appliedAmoled) {
+            theme.applyStyle(R.style.AmoledOverlay, true)
+            window.navigationBarColor = android.graphics.Color.BLACK
+        }
+        super.onCreate(savedInstanceState)
+    }
+
+    /** Modo AMOLED con el que se creó la pantalla: si cambió en Ajustes, al volver se recarga. */
+    private var appliedAmoled = false
+
+    override fun onStart() {
+        super.onStart()
+        if (appliedAmoled != knf.kuma.commons.PrefsUtil.isAmoled) recreate()
+    }
+
     override fun onResume() {
         noCrash {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {

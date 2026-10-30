@@ -156,6 +156,20 @@ class AnimeDetailsMaterialHolder(val view: View) {
                     }
                     showLayout(layouts[5])
                 }
+            if (knf.kuma.anilist.AniListAuth.isLoggedIn && !binding.layCharacters.isVisible)
+                launch {
+                    noCrashSuspend {
+                        val characters = withContext(Dispatchers.IO) {
+                            val mediaId = (knf.kuma.anilist.AniListMatcher.findAniListId(animeObject.aid, animeObject.slug, animeObject.name)
+                                    as? knf.kuma.anilist.AniListMatcher.Lookup.Found)?.mediaId ?: return@withContext null
+                            knf.kuma.anilist.AniListApi.mediaFavourites(mediaId)?.second
+                        }
+                        if (!characters.isNullOrEmpty()) {
+                            binding.recyclerCharacters.adapter = knf.kuma.anilist.ui.AniListCharactersAdapter(characters)
+                            binding.layCharacters.isVisible = true
+                        }
+                    }
+                }
             noCrash {
                 if (animeObject.relations.isNotEmpty()) {
                     recyclerViewRelated.removeAllDecorations()

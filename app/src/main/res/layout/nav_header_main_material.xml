@@ -1,99 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Encabezado del menú lateral (rediseño): tarjeta con portada/foto/nombre de AniList y accesos rápidos.
+     Conserva los ids que usa el código (img, header_avatar, backupLocation, action_*). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/img"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/side_nav_bar"
-    android:clipToPadding="false"
-    android:fitsSystemWindows="false"
-    android:gravity="top"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingStart="12dp"
     android:paddingTop="40dp"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    android:paddingEnd="12dp"
+    android:paddingBottom="8dp">
 
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="22dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp">
+
+        <FrameLayout
+            android:id="@+id/img"
+            android:layout_width="match_parent"
+            android:layout_height="168dp"
+            android:background="@drawable/side_nav_bar">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/hub_banner_gradient" />
+
+            <ImageButton
+                android:id="@+id/action_info"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <ImageView
+                    android:id="@+id/header_avatar"
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:contentDescription="Foto de perfil"
+                    app:srcCompat="@mipmap/ic_launcher" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingStart="12dp">
+
+                    <TextView
+                        android:id="@+id/backupLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:tag=":aesthetic_ignore"
+                        android:text="Conectar con AniList"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="UkiList"
+                        android:textColor="#B3FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Accesos rápidos: círculo con ícono + etiqueta -->
     <LinearLayout
         android:id="@+id/optionsBar"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_marginTop="12dp"
-        android:gravity="bottom|end"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
         android:orientation="horizontal">
 
-        <ImageButton
+        <LinearLayout
             android:id="@+id/action_share"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/background_ripple"
-            android:padding="5dp"
-            android:tint="@android:color/white"
-            app:srcCompat="@drawable/ic_achievement_share" />
+            style="@style/DrawerQuickAction">
 
-        <ImageButton
-            android:id="@+id/action_info"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/background_ripple"
-            android:padding="5dp"
-            app:srcCompat="@drawable/ic_info_white"/>
+            <ImageView
+                style="@style/DrawerQuickActionIcon"
+                app:srcCompat="@drawable/ic_achievement_share" />
 
-        <ImageButton
+            <TextView
+                style="@style/DrawerQuickActionLabel"
+                android:text="Compartir" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/action_trophy"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/background_ripple"
-            android:padding="5dp"
-            app:srcCompat="@drawable/ic_trophy"/>
+            style="@style/DrawerQuickAction">
 
-        <ImageButton
+            <ImageView
+                style="@style/DrawerQuickActionIcon"
+                app:srcCompat="@drawable/ic_trophy" />
+
+            <TextView
+                style="@style/DrawerQuickActionLabel"
+                android:text="Logros" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/action_login"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@drawable/background_ripple"
-            android:padding="5dp"
-            app:srcCompat="@drawable/ic_sync"/>
+            style="@style/DrawerQuickAction">
 
-        <ImageButton
+            <ImageView
+                style="@style/DrawerQuickActionIcon"
+                app:srcCompat="@drawable/ic_sync" />
+
+            <TextView
+                style="@style/DrawerQuickActionLabel"
+                android:text="AniList" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/action_map"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="5dp"
-            android:background="@drawable/background_ripple"
-            android:padding="5dp"
-            android:visibility="visible"
-            app:srcCompat="@drawable/ic_map"/>
+            style="@style/DrawerQuickAction">
+
+            <ImageView
+                style="@style/DrawerQuickActionIcon"
+                app:srcCompat="@drawable/ic_map" />
+
+            <TextView
+                style="@style/DrawerQuickActionLabel"
+                android:text="Mapa" />
+        </LinearLayout>
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/header_avatar"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        app:srcCompat="@mipmap/ic_launcher"/>
-
-    <TextView
-        android:id="@+id/backupLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="4dp"
-        android:tag=":aesthetic_ignore"
-        android:text="Almacenamiento local"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="14dp"
+        android:alpha="0.12"
+        android:background="?android:textColorPrimary" />
 </LinearLayout>

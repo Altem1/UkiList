@@ -98,6 +98,7 @@ class ActivityAnime : GenericActivity(), AnimeActivityHolder.Interface {
                 if (animeObject != null) {
                     doOnUI {
                         chapters = animeObject.chapters
+                        currentAnime = animeObject
                         genres = animeObject.genres
                         favoriteObject = animeObject.asFavorite().apply {
                             holder.imageView.onLongClick(returnValue = true) {
@@ -107,11 +108,13 @@ class ActivityAnime : GenericActivity(), AnimeActivityHolder.Interface {
                                         withContext(Dispatchers.Main) { holder.setFABState(false) }
                                         dao.delete(this@apply)
                                         RecommendHelper.registerAll(genres, RankType.UNFAV)
+                    syncAniListFav(false)
                                         doOnUI { toast("Removido de favoritos") }
                                     } else {
                                         withContext(Dispatchers.Main) { holder.setFABState(true) }
                                         dao.addFav(this@apply)
                                         RecommendHelper.registerAll(genres, RankType.FAV)
+                    syncAniListFav(true)
                                         AchievementManager.onFavAdded(genres)
                                         doOnUI { toast("Añadido a favoritos") }
                                     }
@@ -152,6 +155,13 @@ class ActivityAnime : GenericActivity(), AnimeActivityHolder.Interface {
         }
     }
 
+    private var currentAnime: knf.kuma.pojos.av1.DirectoryAV1? = null
+
+    /** El corazón de la app también marca el anime como favorito en AniList. */
+    private fun syncAniListFav(favourite: Boolean) {
+        currentAnime?.let { knf.kuma.anilist.AniListFavouriteWorker.anime(applicationContext, it.aid, it.slug, it.name, favourite) }
+    }
+
     private fun setResult() {
         isEdited = true
     }
@@ -165,10 +175,12 @@ class ActivityAnime : GenericActivity(), AnimeActivityHolder.Interface {
                     holder.setFABState(false)
                     withContext(Dispatchers.IO) { dao.delete(it) }
                     RecommendHelper.registerAll(genres, RankType.UNFAV)
+                    syncAniListFav(false)
                 } else {
                     holder.setFABState(true)
                     withContext(Dispatchers.IO) { dao.addFav(it) }
                     RecommendHelper.registerAll(genres, RankType.FAV)
+                    syncAniListFav(true)
                     AchievementManager.onFavAdded(genres)
                 }
                 syncData { favs() }

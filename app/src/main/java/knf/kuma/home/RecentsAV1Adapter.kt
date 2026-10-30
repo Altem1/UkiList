@@ -22,7 +22,8 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onLongClick
 
-class RecentsAV1Adapter(val fragment: Fragment, val isMaterial: Boolean, private val isLarge: Boolean = true, private val showSeen: Boolean = true) : UpdateableAdapter<RecentsAV1Adapter.RecentViewHolder>() {
+/** [wide]: tarjeta horizontal con próxima emisión y % de AniList ("Últimos actualizados (viendo)"). */
+class RecentsAV1Adapter(val fragment: Fragment, val isMaterial: Boolean, private val isLarge: Boolean = true, private val showSeen: Boolean = true, private val wide: Boolean = false) : UpdateableAdapter<RecentsAV1Adapter.RecentViewHolder>() {
 
     private var list: List<RecentAV1> = emptyList()
 
@@ -35,7 +36,7 @@ class RecentsAV1Adapter(val fragment: Fragment, val isMaterial: Boolean, private
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecentViewHolder = RecentViewHolder(
         parent.inflate(
-            if (isLarge) {
+            if (wide) R.layout.item_watching_wide else if (isLarge) {
                 if (isMaterial) {
                     R.layout.item_fav_grid_card_material
                 } else {
@@ -56,8 +57,9 @@ class RecentsAV1Adapter(val fragment: Fragment, val isMaterial: Boolean, private
         if (list.isEmpty()) return
         val item = list[position]
         holder.img.load(item.animeImageUrl)
-        holder.title.text = item.name
-        holder.type?.text = item.chapter
+        if (wide) knf.kuma.anilist.AniListScores.bindWide(holder.root, item.aid, item.slug, item.name)
+        else knf.kuma.anilist.AniListScores.bind(holder.title, item.aid, item.slug, item.name)
+        holder.type?.text = if (wide && item.number <= 0) "En emisión" else item.chapter
         holder.root.onClick {
             ActivityAnime.open(fragment, item, holder.img)
         }

@@ -37,7 +37,7 @@ class EmissionAdapter internal constructor(private val fragment: Fragment) : Rec
     override fun onBindViewHolder(holder: EmissionItem, position: Int) {
         val animeObject = list[position]
         holder.imageView.load(animeObject.imageUrl)
-        holder.title.text = animeObject.name
+        knf.kuma.anilist.AniListScores.bind(holder.title, animeObject.aid, animeObject.slug, animeObject.name)
         holder.hiddenOverlay.setHidden(animeObject.isHidden, false)
         holder.heart.isVisible = showHeart && animeObject.isFavorite
         holder.cardView.setOnClickListener { ActivityAnime.open(fragment, animeObject, holder.imageView, false, animate = true) }

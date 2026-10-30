@@ -55,7 +55,33 @@ object AniListDrawer {
         header.findViewById<View>(R.id.action_login).setOnClickListener { showMenu(activity, openSettings) }
     }
 
+    /** Botón Perfil de la barra inferior: muestra la foto de AniList (sin el tinte de la barra); sin sesión, el ícono genérico. */
+    fun bindBottomAvatar(activity: AppCompatActivity, bottom: com.google.android.material.navigation.NavigationBarView) {
+        val item = bottom.menu.findItem(R.id.action_bottom_profile) ?: return
+        AniListAuth.avatarUrl.observe(activity) { url ->
+            val itemView = bottom.findViewById<com.google.android.material.navigation.NavigationBarItemView>(R.id.action_bottom_profile)
+            if (url.isNullOrBlank()) {
+                item.setIcon(R.drawable.ic_bottom_profile)
+                itemView?.setIconTintList(bottom.itemIconTintList)
+                return@observe
+            }
+            Glide.with(activity).asBitmap().load(url).circleCrop()
+                .into(object : com.bumptech.glide.request.target.CustomTarget<android.graphics.Bitmap>() {
+                    override fun onResourceReady(resource: android.graphics.Bitmap, transition: com.bumptech.glide.request.transition.Transition<in android.graphics.Bitmap>?) {
+                        item.icon = android.graphics.drawable.BitmapDrawable(activity.resources, resource)
+                        itemView?.setIconTintList(null)
+                    }
+
+                    override fun onLoadCleared(placeholder: android.graphics.drawable.Drawable?) {}
+                })
+        }
+    }
+
     private var viewerRefreshed = false
+
+    /** Para quien repinte el header (p. ej. al cambiar el tema): vuelve a poner la portada o el degradado. */
+    fun refreshBanner(activity: AppCompatActivity, header: View) =
+        loadBanner(activity, header.findViewById(R.id.img), AniListAuth.bannerUrl.value)
 
     private fun loadBanner(activity: AppCompatActivity, banner: View, url: String?) {
         if (url.isNullOrBlank()) {

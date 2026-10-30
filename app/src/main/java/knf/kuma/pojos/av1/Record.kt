@@ -105,6 +105,10 @@ abstract class RecordDao {
     @get:Query("SELECT *, MAX(number) FROM Record GROUP BY aid ORDER BY date DESC")
     abstract val allPagedMaxOnly: PagingSource<Int, Record>
 
+    /** Último episodio visto de cada anime, del más reciente al más antiguo. */
+    @Query("SELECT *, MAX(date) FROM Record GROUP BY aid ORDER BY date DESC LIMIT :limit")
+    abstract fun lastSeenFlow(limit: Int): Flow<List<Record>>
+
     @get:Query("SELECT count(*) FROM Record")
     abstract val countFlow: Flow<Int>
 

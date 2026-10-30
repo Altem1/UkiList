@@ -37,10 +37,13 @@ object SSLSkipper {
         val trustAllHostnames = HostnameVerifier { hostName, _ -> /*isHostValid(hostName)*/ true }
 
         try {
+            // Servidores como MP4Upload cuelgan el handshake si llega SNI: el reproductor lo necesita apagado.
+            // Lo que va a Cloudflare (animeav1, AniList) lo fuerza por su cuenta con SniSocketFactory.
             System.setProperty("jsse.enableSNIExtension", "false")
             val sc = SSLContext.getInstance("SSL")
             sc.init(null, trustAllCertificates, SecureRandom())
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.socketFactory)
+            // Sin SNI global, pero animeav1 (Cloudflare) lo exige: sin él el scraping caía en reintentos lentos.
+            HttpsURLConnection.setDefaultSSLSocketFactory(knf.kuma.anilist.SniSocketFactory(sc.socketFactory) { it == "animeav1.com" || it.endsWith(".animeav1.com") })
             HttpsURLConnection.setDefaultHostnameVerifier(trustAllHostnames)
         } catch (e: GeneralSecurityException) {
             throw ExceptionInInitializerError(e)

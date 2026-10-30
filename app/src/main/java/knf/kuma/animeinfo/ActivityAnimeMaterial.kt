@@ -70,6 +70,18 @@ class ActivityAnimeMaterial : GenericActivity(), AnimeActivityMaterialHolder.Int
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(EAHelper.getThemeNA())
         super.onCreate(savedInstanceState)
+        // Enlace compartido ukilist://anime/<slug> -> ficha del catálogo
+        intent.data?.takeIf { it.scheme == "ukilist" }?.lastPathSegment?.let {
+            intent.data = "https://animeav1.com/media/$it".toUri()
+        }
+        if (knf.kuma.commons.PrefsUtil.useAnimeHub) {
+            if (intent.getBooleanExtra(keyNotification, false))
+                sendBroadcast(NotificationObj.fromIntent(intent).getBroadcast(this))
+            startActivity(Intent(intent).setClass(this, knf.kuma.animeinfo.hub.AnimeHubActivity::class.java).putExtra(keyNotification, false))
+            finish()
+            overridePendingTransition(0, 0)
+            return
+        }
         try {
             setContentView(if (isMaterial) R.layout.activity_anime_info_material else R.layout.activity_anime_info)
         } catch (e: InflateException) {
@@ -97,6 +109,7 @@ class ActivityAnimeMaterial : GenericActivity(), AnimeActivityMaterialHolder.Int
                 if (animeObject != null) {
                     doOnUI {
                         chapters = animeObject.chapters
+                        currentAnime = animeObject
                         genres = animeObject.genres
                         favoriteObject = animeObject.asFavorite().apply {
                             holder.imageView.onLongClick(returnValue = true) {
@@ -106,11 +119,13 @@ class ActivityAnimeMaterial : GenericActivity(), AnimeActivityMaterialHolder.Int
                                         withContext(Dispatchers.Main) { holder.setFABState(false) }
                                         dao.delete(this@apply)
                                         RecommendHelper.registerAll(genres, RankType.UNFAV)
+                    syncAniListFav(false)
                                         doOnUI { toast("Removido de favoritos") }
                                     } else {
                                         withContext(Dispatchers.Main) { holder.setFABState(true) }
                                         dao.addFav(this@apply)
                                         RecommendHelper.registerAll(genres, RankType.FAV)
+                    syncAniListFav(true)
                                         AchievementManager.onFavAdded(genres)
                                         doOnUI { toast("Añadido a favoritos") }
                                     }
@@ -151,6 +166,13 @@ class ActivityAnimeMaterial : GenericActivity(), AnimeActivityMaterialHolder.Int
         }
     }
 
+    private var currentAnime: knf.kuma.pojos.av1.DirectoryAV1? = null
+
+    /** El corazón de la app también marca el anime como favorito en AniList. */
+    private fun syncAniListFav(favourite: Boolean) {
+        currentAnime?.let { knf.kuma.anilist.AniListFavouriteWorker.anime(applicationContext, it.aid, it.slug, it.name, favourite) }
+    }
+
     private fun setResult() {
         isEdited = true
     }
@@ -164,10 +186,12 @@ class ActivityAnimeMaterial : GenericActivity(), AnimeActivityMaterialHolder.Int
                     holder.setFABState(false)
                     withContext(Dispatchers.IO) { dao.delete(it) }
                     RecommendHelper.registerAll(genres, RankType.UNFAV)
+                    syncAniListFav(false)
                 } else {
                     holder.setFABState(true)
                     withContext(Dispatchers.IO) { dao.addFav(it) }
                     RecommendHelper.registerAll(genres, RankType.FAV)
+                    syncAniListFav(true)
                     AchievementManager.onFavAdded(genres)
                 }
                 syncData { favs() }

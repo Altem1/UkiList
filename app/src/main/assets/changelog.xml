@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release code="241" version="1.2.0">
+        <change type="new">Nueva ficha de anime: portada y tráiler, botón Continuar/Descargar, pestañas Detalles, Episodios y Podría gustarte</change>
+        <change type="new">Episodios con título y sinopsis en español, openings y endings con enlaces para escucharlos</change>
+        <change type="new">Detalles de AniList: puntuación, director, estudio, doblajes y personajes</change>
+        <change type="new">Botón "Sin sincronizar" en la ficha para elegir el anime de AniList a mano</change>
+        <change type="new">Perfil en la barra inferior con AniList, Descargas e Historial</change>
+        <change type="new">Emisión en la barra inferior; Configuración se movió al Perfil</change>
+        <change type="new">Búsqueda avanzada en Directorio: temporada, año, estado, tipo y géneros</change>
+        <change type="new">Inicio: Últimos actualizados (viendo) y Últimos vistos</change>
+        <change type="new">Porcentaje de AniList junto al nombre de cada portada</change>
+        <change type="new">Modo AMOLED (fondo negro puro)</change>
+        <change type="new">Reproductor: siguiente episodio, saltar opening y miniventana al empezar el ending (AniSkip)</change>
+        <change type="new">Pestaña del corazón "Para ti" con recomendaciones de AniList; corazón y personajes favoritos sincronizados</change>
+        <change type="change">Barra inferior flotante, menú lateral y descargas rediseñados</change>
+        <change type="change">Emparejamiento con AniList más preciso (temporadas, películas, año de estreno)</change>
+        <change type="change">Se quitó la opción de anuncios</change>
+        <change type="fix">Streaming lento por la configuración de conexión del reproductor</change>
+        <change type="fix">El reproductor podía quedarse bloqueado hasta reiniciar la app</change>
+        <change type="fix">En la ficha, al bajar a los episodios ya se puede volver a subir al encabezado</change>
+    </release>
     <release code="240" version="1.1.0">
         <change type="new">Ventana de sincronización con AniList: carátula, avance y contador de lo sincronizado y lo que no</change>
         <change type="new">Rewatch: volver a ver un anime completado lo marca como "Rewatching" en AniList</change>

@@ -54,6 +54,7 @@ class VideoActivity : AppCompatActivity(), PlayerHolder.PlayerCallback {
 
     private var scrobbler: AniListScrobbleTracker? = null
     private var autoplay: NextEpisodeAutoplay? = null
+    private var skipSegments: SkipSegments? = null
     private var isEnding = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +71,7 @@ class VideoActivity : AppCompatActivity(), PlayerHolder.PlayerCallback {
 
     @OptIn(UnstableApi::class)
     fun initPlayer(savedInstanceState: Bundle?) {
+        knf.kuma.commons.PlayTiming.mark("reproductor creado")
         binding.player.resizeMode = getResizeMode()
         find<View>(R.id.exit).onClick { onBackPressedDispatcher.onBackPressed() }
         find<View>(R.id.lock).onClick { lock() }
@@ -108,6 +110,15 @@ class VideoActivity : AppCompatActivity(), PlayerHolder.PlayerCallback {
                 playerHolder.start()
                 autoplay?.cancel()
                 autoplay = NextEpisodeAutoplay(this@VideoActivity, lifecycleScope, binding.root as android.view.ViewGroup, intent)
+                findViewById<View>(R.id.next_episode)?.apply {
+                    isVisible = autoplay?.isAvailable == true
+                    setOnClickListener { autoplay?.playNow() }
+                }
+                skipSegments?.detach()
+                skipSegments = SkipSegments(lifecycleScope, intent, binding.skipSegment,
+                    onEnding = { if (!isInPictureInPictureMode) autoplay?.onEndingStarted() },
+                    onNext = { autoplay?.playNow() }
+                ).also { it.attach(playerHolder.audioFocusPlayer) }
             }
         }
     }
@@ -300,6 +311,7 @@ class VideoActivity : AppCompatActivity(), PlayerHolder.PlayerCallback {
 
     private fun releasePlayer() {
         scrobbler?.detach()
+        skipSegments?.detach()
         if (::playerHolder.isInitialized)
             playerHolder.release()
     }
@@ -340,6 +352,7 @@ class VideoActivity : AppCompatActivity(), PlayerHolder.PlayerCallback {
     }
 
     override fun onPlayerStateChanged(state: Int) {
+        if (state == Player.STATE_READY) knf.kuma.commons.PlayTiming.mark("video listo (STATE_READY)")
         if (state == Player.STATE_READY)
             doOnUI { hideUI() }
         if (state == Player.STATE_ENDED && !isEnding) {

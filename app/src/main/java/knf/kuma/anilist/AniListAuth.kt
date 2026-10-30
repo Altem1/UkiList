@@ -163,7 +163,10 @@ object AniListAuth {
         return try {
             client.newCall(request).execute().use { response ->
                 if (response.code == 401) logout()
-                if (!response.isSuccessful) return null
+                if (!response.isSuccessful) {
+                    android.util.Log.w("AniList", "HTTP ${response.code} (${response.header("Retry-After") ?: "-"}) en ${query.take(60)}")
+                    return null
+                }
                 JSONObject(response.body.string()).optJSONObject("data")
             }
         } catch (e: Exception) {

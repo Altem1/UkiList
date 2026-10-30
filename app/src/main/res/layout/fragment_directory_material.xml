@@ -28,30 +28,48 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.google.android.material.tabs.TabLayout
-                        android:id="@+id/tabs"
-                        style="@style/Widget.MaterialComponents.TabLayout"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        app:tabBackground="@android:color/transparent"
-                        app:tabIndicator="@drawable/material_tab_indicator">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
+                        <com.google.android.material.tabs.TabLayout
+                            android:id="@+id/tabs"
+                            style="@style/Widget.MaterialComponents.TabLayout"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:text="ANIME" />
+                            android:background="@android:color/transparent"
+                            app:tabBackground="@android:color/transparent"
+                            app:tabIndicator="@drawable/material_tab_indicator">
 
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="OVA" />
+                            <com.google.android.material.tabs.TabItem
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ANIME" />
 
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="PELICULA" />
-                    </com.google.android.material.tabs.TabLayout>
+                            <com.google.android.material.tabs.TabItem
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="OVA" />
+
+                            <com.google.android.material.tabs.TabItem
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="PELICULA" />
+                        </com.google.android.material.tabs.TabLayout>
+
+                        <!-- Abre la búsqueda avanzada (temporada, año, géneros...) -->
+                        <ImageButton
+                            android:id="@+id/btnAdvancedSearch"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:contentDescription="Búsqueda avanzada"
+                            android:src="@drawable/ic_filter"
+                            app:tint="?android:textColorPrimary" />
+                    </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"

@@ -39,15 +39,13 @@ class DownloadingAdapterMaterial internal constructor(private val fragment: Frag
         holder.progress.max = 100
         if (downloadObject.state == DownloadObject.PENDING) {
             holder.eta.visibility = View.GONE
-            holder.progress.isIndeterminate = true
-            holder.progress.progress = 0
+            holder.setProgress(null)
         } else {
             if (downloadObject.state == DownloadObject.PAUSED)
                 holder.eta.visibility = View.GONE
             else
                 holder.eta.visibility = View.VISIBLE
-            holder.progress.isIndeterminate = false
-            holder.progress.progress = downloadObject.progress
+            holder.setProgress(downloadObject.progress)
         }
         holder.actionMenu.onClickMenu(R.menu.menu_download_options,hideItems = { downloadObject.getDisabledOptions() }){ item ->
             when(item.itemId){
@@ -87,19 +85,9 @@ class DownloadingAdapterMaterial internal constructor(private val fragment: Frag
                     downloadObject.state = downloadObject1.state
                     if (downloadObject1.state == DownloadObject.PENDING) {
                         holder.eta.visibility = View.GONE
-                        holder.progress.isIndeterminate = true
-                        holder.progress.progress = 0
+                        holder.setProgress(null)
                     } else {
-                        holder.progress.isIndeterminate = false
-                        if (downloadObject1.getEta() == -2L || PrefsUtil.downloaderType == 0)
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                                holder.progress.setProgress(downloadObject1.progress, true)
-                            else
-                                holder.progress.progress = downloadObject1.progress
-                        else {
-                            holder.progress.progress = 0
-                            holder.progress.secondaryProgress = downloadObject1.progress
-                        }
+                        holder.setProgress(downloadObject1.progress)
                         holder.eta.visibility = View.VISIBLE
                         holder.eta.text = downloadObject1.subtext
                     }
@@ -145,5 +133,20 @@ class DownloadingAdapterMaterial internal constructor(private val fragment: Frag
         val eta: TextView = itemView.find(R.id.eta)
         val actionMenu: View = itemView.find(R.id.actionMenu)
         val progress: ProgressBar = itemView.find(R.id.progress)
+        private val percent: TextView? = itemView.findViewById(R.id.percent)
+
+        /** null = en espera (círculo girando, sin porcentaje). El indicador circular solo cambia de modo estando oculto. */
+        fun setProgress(value: Int?) {
+            val indeterminate = value == null
+            if (progress.isIndeterminate != indeterminate) {
+                progress.visibility = View.INVISIBLE
+                progress.isIndeterminate = indeterminate
+                progress.visibility = View.VISIBLE
+            }
+            if (value != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) progress.setProgress(value, true) else progress.progress = value
+            }
+            percent?.text = value?.let { "$it%" } ?: ""
+        }
     }
 }

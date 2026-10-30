@@ -80,6 +80,16 @@ object FileActions {
         }
     }
 
+    /** Botón de play: sin diálogos, usa el servidor favorito (recordado) o el primero que responda. */
+    fun quickStream(fragment: Fragment, anime: DirectoryAV1, chapter: Chapter, callback: ActionCallback) {
+        try {
+            execute(fragment.requireContext(), fragment.viewLifecycleOwner, if (CastUtil.get().connected()) Type.CAST else Type.STREAM,
+                chapter.link(anime), chapter, chapter.asDownload(anime), fragment.view, callback, autoPick = true)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun download(activity: AppCompatActivity, anime: DirectoryAV1, chapter: Chapter, isQueued: Boolean = false, callback: ActionCallback) {
         try {
             if (isQueued)
@@ -126,7 +136,7 @@ object FileActions {
         execute(context, owner, Type.DOWNLOAD, chapter.link(anime), chapter, chapter.asDownload(anime, true), anchorView, callback)
     }
 
-    private fun execute(context: Context, owner: LifecycleOwner, type: Type, url: String, item: Any, downloadObject: DownloadObject, anchorView: View?, callback: ActionCallback) {
+    private fun execute(context: Context, owner: LifecycleOwner, type: Type, url: String, item: Any, downloadObject: DownloadObject, anchorView: View?, callback: ActionCallback, autoPick: Boolean = false) {
         if (isExecuting) {
             Toaster.toast("Solo una petición a la vez")
             callback.call(CallbackState.OPERATION_RUNNING)
@@ -144,10 +154,13 @@ object FileActions {
                 callback.call(result)
                 return@launch
             }
-            val actionRequest = ActionRequest(context, owner, type, url, item, downloadObject, callback)
+            val actionRequest = ActionRequest(context, owner, type, url, item, downloadObject, callback, autoPick)
             isExecuting = true
-            snackBarManager = getSnackManager(anchorView)
-            snackBarManager.showSnack("Obteniendo servidores...")
+            knf.kuma.commons.PlayTiming.start("pedir servidores")
+            // Si la barra de progreso no se puede mostrar en esa vista, se sigue sin ella (antes quedaba isExecuting
+            // en true para siempre y ningún episodio volvía a abrir hasta reiniciar la app).
+            snackBarManager = runCatching { getSnackManager(anchorView) }.getOrNull()
+            runCatching { snackBarManager.showSnack("Obteniendo servidores...") }
             launch(Dispatchers.IO) {
                 try {
                     val response = JsExtractor.processLinkMultiple(url, listOf("embeds", "downloads"))
@@ -209,6 +222,7 @@ object FileActions {
                             {it.name}
                         )
                     ).toMutableList()
+                    knf.kuma.commons.PlayTiming.mark("servidores listos (${subServers.size} sub, ${dubServers.size} dub)")
                     val langSelect: (Int) -> Unit = { index ->
                         selectedLang = index
                         servers = if (index == 0) {
@@ -224,7 +238,7 @@ object FileActions {
                         }.toMutableList()
                         showServerList(actionRequest)
                     }
-                    if (dubServers.isNotEmpty()) {
+                    if (dubServers.isNotEmpty() && !autoPick) {
                         if (!MultipleDownloadManager.isLoading || MultipleDownloadManager.langSelected == -1)
                             actionRequest.owner.lifecycleScope.launch(Dispatchers.Main) {
                                 MaterialDialog(context).safeShow {
@@ -277,7 +291,12 @@ object FileActions {
                     snackBarManager.dismissSnack()
                     val names = Server.getNames(servers)
                     val lasServer = PrefsUtil.lastServer
-                    if (PrefsUtil.rememberServer && lasServer != null && names.contains(lasServer) && useLast)
+                    if (actionRequest.autoPick) {
+                        // Favorito si sigue disponible; si no, el primero que no sea web (los WEB van al final).
+                        val index = lasServer?.let { names.indexOf(it) }?.takeIf { it >= 0 }
+                            ?: names.indexOfFirst { !it.endsWith("(WEB)") }.takeIf { it >= 0 } ?: 0
+                        processSelectedServer(actionRequest, index, names[index], true)
+                    } else if (PrefsUtil.rememberServer && lasServer != null && names.contains(lasServer) && useLast)
                         processSelectedServer(actionRequest, names.indexOf(lasServer), lasServer, true)
                     else
                         MaterialDialog(actionRequest.context).safeShow {
@@ -328,7 +347,9 @@ object FileActions {
         actionRequest.owner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 snackBarManager.showSnack("Obteniendo link${if (showName) " $text" else ""}...")
+                knf.kuma.commons.PlayTiming.mark("resolviendo $text")
                 val server = servers[selected].verified
+                knf.kuma.commons.PlayTiming.mark("link de $text: ${if (server == null) "falló" else "ok"}")
                 snackBarManager.dismissSnack()
                 if (server == null && servers.size == 1) {
                     Toaster.toast("Error en servidor, intente mas tarde")
@@ -343,10 +364,12 @@ object FileActions {
                     selected = 0
                     Toaster.toast("Error en servidor")
                     showServerList(actionRequest)
+                } else if (server.haveOptions() && actionRequest.autoPick && actionRequest.type == Type.STREAM) {
+                    startStreaming(actionRequest, server.options[0])
                 } else if (server.haveOptions()) {
                     showOptions(actionRequest, server)
                 } else {
-                    saveLastServer(text)
+                    if (!actionRequest.autoPick) saveLastServer(text)
                     when {
                         server.option.needTabs -> {
                             if (actionRequest.downloadObject.addQueue) {
@@ -442,6 +465,7 @@ object FileActions {
 
     private fun startStreaming(actionRequest: ActionRequest, option: Option) {
         val serverName = servers.getOrNull(selected)?.name
+        knf.kuma.commons.PlayTiming.mark("abrir reproductor ($serverName)")
         reset()
         if (actionRequest.item is ChapterWID && actionRequest.downloadObject.addQueue) {
             QueueManager.add(Uri.parse(option.url), false, actionRequest.item)
@@ -568,7 +592,8 @@ object FileActions {
             val url: String,
             val item: Any,
             val downloadObject: DownloadObject,
-            val callback: ActionCallback
+            val callback: ActionCallback,
+            val autoPick: Boolean = false
     )
 
     enum class Type {

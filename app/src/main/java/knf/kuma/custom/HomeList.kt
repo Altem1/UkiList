@@ -70,7 +70,14 @@ class HomeList : LinearLayout {
     override fun onFinishInflate() {
         super.onFinishInflate()
         if (startHidden) visibility = GONE
-        viewAll.text = showAllText
+        if (showAllText.equals("Ver Todos", ignoreCase = true)) {
+            // "Ver todos" ahora es solo una flecha
+            viewAll.text = ""
+            viewAll.setIconResource(R.drawable.ic_arrow_forward_round)
+            viewAll.iconPadding = 0
+            viewAll.iconSize = (28 * resources.displayMetrics.density).toInt()
+            viewAll.contentDescription = "Ver todos"
+        } else viewAll.text = showAllText
         subheader.text = subheaderText
         errorTV.text = errorText
         if (showAll) viewAll.visibility = VISIBLE

@@ -13,8 +13,8 @@ android {
         applicationId "com.altem1.ukilist"
         minSdkVersion 26
         targetSdkVersion 36
-        versionCode 240
-        versionName "1.1.0"
+        versionCode 241
+        versionName "1.2.0"
         multiDexEnabled true
         buildConfigField "String", "ANILIST_CLIENT_ID", "\"${localProperties['ANILIST_CLIENT_ID'] ?: ""}\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -161,6 +161,7 @@ dependencies {
     implementation 'androidx.leanback:leanback-paging:1.1.0'
     implementation 'androidx.tvprovider:tvprovider:1.1.0'
     implementation 'androidx.palette:palette-ktx:1.0.0'
+    implementation 'com.google.mlkit:translate:17.0.3'
     implementation 'com.google.android.gms:play-services-cast:22.2.0'
     implementation platform('com.google.firebase:firebase-bom:34.7.0')
     implementation 'com.google.firebase:firebase-firestore'

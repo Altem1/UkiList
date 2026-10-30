@@ -1,98 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Descarga en curso (rediseño): tarjeta redondeada con progreso circular y porcentaje. Mismos ids que antes. -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_marginStart="12dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginBottom="6dp"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?attr/selectableItemBackgroundBorderless"
-    android:orientation="vertical">
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#22FFFFFF"
+    app:strokeWidth="1dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="14dp">
+
+        <FrameLayout
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:padding="4dp">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminate="true"
+                android:max="100"
+                app:indicatorColor="@color/colorAccent"
+                app:indicatorSize="50dp"
+                app:trackColor="#225a7dff"
+                app:trackCornerRadius="4dp"
+                app:trackThickness="4dp" />
 
             <TextView
-                android:id="@+id/server"
-                android:layout_width="match_parent"
+                android:id="@+id/percent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
-                tools:text="Server" />
+                android:layout_gravity="center"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="42%" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="6dp">
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
                 android:ellipsize="end"
-                android:gravity="center_vertical"
                 android:maxLines="2"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="18sp"
-                tools:text="Title" />
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="Sousou no Frieren" />
+
+            <TextView
+                android:id="@+id/chapter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/colorAccentLight"
+                android:textSize="12sp"
+                tools:text="Episodio 12" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="25dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/chapter"
+                    android:id="@+id/server"
                     android:layout_width="0dp"
-                    android:layout_height="25dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="bottom"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:textColor="?colorAccent"
-                    android:textSize="16sp"
-                    tools:text="Chapter"/>
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="?android:textColorSecondary"
+                    android:textSize="11sp"
+                    tools:text="MP4Upload" />
 
                 <TextView
                     android:id="@+id/eta"
                     android:layout_width="wrap_content"
-                    android:layout_height="25dp"
-                    android:gravity="bottom"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:textSize="14sp"
-                    tools:text="ETA"/>
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:textColorSecondary"
+                    android:textSize="11sp"
+                    tools:text="2 min · 3.1 MB/s" />
             </LinearLayout>
         </LinearLayout>
+
         <ImageView
             android:id="@+id/actionMenu"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentEnd="true"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:background="@drawable/background_ripple"
             android:clickable="true"
+            android:contentDescription="Opciones de descarga"
             android:focusable="true"
-            android:padding="4dp"
+            android:padding="6dp"
             app:srcCompat="@drawable/action_chapter" />
-    </RelativeLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp">
-
-        <ProgressBar
-            android:id="@+id/progress"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_gravity="center"
-            android:indeterminate="true"/>
-    </FrameLayout>
-</LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

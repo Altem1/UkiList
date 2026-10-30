@@ -38,6 +38,10 @@ interface AniListScrobbleDao {
     @Query("SELECT count(*) FROM anilist_scrobble WHERE status = 2")
     fun failedCountLive(): LiveData<Int>
 
+    /** Episodios de un anime que no se pudieron subir (botón "Sin sincronizar" de la ficha). */
+    @Query("SELECT * FROM anilist_scrobble WHERE slug = :slug AND status = 2")
+    fun failedForSlugLive(slug: String): LiveData<List<AniListScrobbleState>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun set(state: AniListScrobbleState)
 

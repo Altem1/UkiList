@@ -5,23 +5,26 @@
     <PreferenceCategory android:title="@string/category_sync">
 
         <knf.kuma.anilist.AniListPreference
+            android:icon="@drawable/ic_pref_account"
             android:key="anilist_account"
-            android:persistent="false"
-            app:iconSpaceReserved="false" />
+            android:persistent="false" />
 
         <SwitchPreference
             android:defaultValue="false"
+            android:icon="@drawable/ic_pref_library_sync"
             android:key="anilist_sync_library"
             android:summary="@string/pref_sync_library_summary"
             android:title="@string/pref_sync_library_title" />
 
         <SwitchPreference
             android:defaultValue="false"
+            android:icon="@drawable/ic_pref_scrobble"
             android:key="anilist_auto_scrobble"
             android:summary="@string/pref_auto_scrobble_summary"
             android:title="@string/pref_auto_scrobble_title" />
 
         <Preference
+            android:icon="@drawable/ic_pref_exceptions"
             android:key="anilist_exceptions"
             android:persistent="false"
             android:title="@string/pref_exceptions_title"
@@ -237,20 +240,15 @@
             android:icon="@drawable/ic_list_placeholder"
             android:key="list_placeholder"
             android:title="Usar placeholder en listas" />
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_cash"
-            android:key="ads_enabled_new"
-            android:summary="Mostrar anuncios para ayudar al programador"
-            android:title="Mostrar anuncios" />
-        <Preference
-            android:icon="@drawable/ic_cash"
-            android:key="ads_settings"
-            android:title="Configuracion de anuncios" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="category_design"
         android:title="Personalización">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="anime_hub_design"
+            android:summary="Ficha del anime con portada, botón de reproducir y pestañas (Detalles, Episodios, Podría gustarte)"
+            android:title="Nueva ficha de anime" />
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/design_options"
@@ -267,6 +265,12 @@
             android:key="theme_option"
             android:summary="%s"
             android:title="Estilo de tema"/>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_theme"
+            android:key="amoled_mode"
+            android:summary="Fondo completamente negro en modo oscuro (ahorra batería en pantallas OLED)"
+            android:title="Modo AMOLED" />
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/theme_colors"
@@ -313,4 +317,4 @@
             android:summaryOn="Archivo local"
             android:title="Obtencion de changelog"/>
     </PreferenceCategory>
-</PreferenceScreen>
+</PreferenceScreen>

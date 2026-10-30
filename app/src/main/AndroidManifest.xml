@@ -404,8 +404,30 @@
                     android:pathPrefix="/media/"
                     android:scheme="https" />
             </intent-filter>
+            <!-- Enlaces de "Compartir": ukilist://anime/<slug> (la página del sitio redirige aquí) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="anime"
+                    android:scheme="ukilist" />
+            </intent-filter>
         </activity>
+        <activity
+            android:name=".animeinfo.hub.AnimeHubActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
         <activity android:name=".search.GenreActivityMaterial" />
+        <activity android:name=".search.AdvancedSearchActivity" />
+        <activity
+            android:name=".preferences.SettingsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".profile.ProfileActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".DiagnosticMaterial" />
         <activity android:name=".changelog.ChangelogActivityMaterial" />
         <activity android:name=".DiagnosticMaterial$FullBypass" />

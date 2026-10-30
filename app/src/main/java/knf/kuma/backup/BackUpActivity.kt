@@ -60,14 +60,7 @@ class BackUpActivity : GenericActivity(), SyncItemView.OnClick {
         setContentView(binding.root)
         service = Backups.createService()
         binding.layMain.loginDropbox.visibility = View.GONE
-        if (!PrefsUtil.isAdsEnabled && !BuildConfig.DEBUG && !admFile.exists() && !PrefsUtil.isSubscriptionEnabled) {
-            binding.layMain.loginFirestore.isEnabled = false
-            binding.layMain.adsRequired.visibility = View.VISIBLE
-        } else if (PrefsUtil.isAdsEnabled && Network.isAdsBlocked && !BuildConfig.DEBUG && !admFile.exists() && !PrefsUtil.isSubscriptionEnabled) {
-            binding.layMain.loginFirestore.isEnabled = false
-            binding.layMain.adsRequired.text = "Anuncios bloqueados por host"
-            binding.layMain.adsRequired.visibility = View.VISIBLE
-        } else if (!PrefsUtil.isSecurityUpdated && PrefsUtil.spProtectionEnabled && PrefsUtil.spErrorType != null) {
+        if (!PrefsUtil.isSecurityUpdated && PrefsUtil.spProtectionEnabled && PrefsUtil.spErrorType != null) {
             binding.layMain.loginFirestore.isEnabled = false
             binding.layMain.adsRequired.text =
                 "Proveedor de seguridad no pudo ser actualizado (${PrefsUtil.spErrorType})"

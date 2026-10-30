@@ -34,6 +34,7 @@ import knf.kuma.seeing.SeeingActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -61,6 +62,11 @@ class HomeFragmentMaterial : BottomFragment() {
                 PrefsUtil.recentLastHiddenNew = lastNew
                 binding.listNew.hide()
             }
+        }
+        binding.listWatchingUpdated.setAdapter(RecentsAV1Adapter(this@HomeFragmentMaterial, true, wide = true))
+        binding.listLastSeen.apply {
+            setAdapter(LastSeenAdapter(this@HomeFragmentMaterial))
+            setViewAllClass(knf.kuma.record.RecordActivity::class.java)
         }
         binding.listFavUpdated.apply {
             setAdapter(RecentsAV1Adapter(this@HomeFragmentMaterial, true))
@@ -117,6 +123,28 @@ class HomeFragmentMaterial : BottomFragment() {
                 }
             }
         }
+        // Todos los animes en "Viendo" que están en emisión (horario de animeav1 guardado en CalendarBlacklist).
+        // Primero los que tienen episodio nuevo sin ver; luego el resto por episodio más reciente.
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            val calendar = CacheDB.INSTANCE.calendarBlacklistDAO()
+            combine(viewModel.dbFlowData, CacheDB.INSTANCE.organizerDAO().watchingAidsFlow, calendar.allAidsFlow, CacheDB.INSTANCE.recordAV1DAO().lastSeenFlow(1)) { recents, watching, airing, _ ->
+                val airingSet = airing.toSet()
+                val records = CacheDB.INSTANCE.recordAV1DAO()
+                val latest = recents.groupBy { it.aid }.mapValues { (_, l) -> l.maxByOrNull { it.number }!! }
+                val schedule = calendar.all().associateBy { it.aid }
+                watching.filter { it in airingSet }.mapNotNull { aid ->
+                    latest[aid] ?: schedule[aid]?.let { cal ->
+                        // Sin episodio en recientes: el último que conozca el catálogo guardado (0 = desconocido).
+                        val last = CacheDB.INSTANCE.directoryDAO().findByAid(aid)?.chapters?.maxByOrNull { it.number }
+                        RecentAV1(-aid, aid, last?.eid ?: 0, cal.name, last?.number ?: 0.0, cal.slug)
+                    }
+                }.sortedWith(compareBy<RecentAV1>({ it.number <= 0 || records.chapterIsSeen(it.aid, it.number) }, { r -> recents.indexOfFirst { it.aid == r.aid }.let { i -> if (i < 0) Int.MAX_VALUE else i } }, { it.name }))
+            }.collectLatest { filtered ->
+                withContext(Dispatchers.Main) {
+                    binding.listWatchingUpdated.updateList(filtered)
+                }
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             CacheDB.INSTANCE.favoriteAV1DAO().countFlow.drop(1).collect {
                 val cached = CacheDB.INSTANCE.recentAV1DAO().all
@@ -161,6 +189,11 @@ class HomeFragmentMaterial : BottomFragment() {
         }
         viewLifecycleOwner.lifecycleScope.launch {
             binding.listRecommendedStaff.updateList(StaffRecommendations.createList())
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            CacheDB.INSTANCE.recordAV1DAO().lastSeenFlow(15).collectLatest {
+                binding.listLastSeen.updateList(it)
+            }
         }
         viewModel.reload()
     }

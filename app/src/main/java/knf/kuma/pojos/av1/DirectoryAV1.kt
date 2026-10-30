@@ -395,11 +395,17 @@ data class Genre(
 
 data class SearchState(
     var query: String? = null,
-    var genres: List<String>? = null
+    var genres: List<String>? = null,
+    // Filtros de la búsqueda avanzada (parámetros de animeav1.com/catalogo)
+    var categories: List<String>? = null,
+    var status: String? = null,
+    var minYear: Int? = null,
+    var maxYear: Int? = null,
+    var order: String = "title"
 )
 
 class SearchDataSource(val state: SearchState): PagingSource<Int, DirectoryAV1Min>() {
-    private val baseUrl = "https://animeav1.com/catalogo?order=title"
+    private val baseUrl = "https://animeav1.com/catalogo?order=${state.order}"
 
     override fun getRefreshKey(state: PagingState<Int, DirectoryAV1Min>): Int? = null
 
@@ -413,6 +419,10 @@ class SearchDataSource(val state: SearchState): PagingSource<Int, DirectoryAV1Mi
             state.genres?.forEach {
                 url.appendQueryParameter("genre", it)
             }
+            state.categories?.forEach { url.appendQueryParameter("category", it) }
+            state.status?.let { url.appendQueryParameter("status", it) }
+            state.minYear?.let { url.appendQueryParameter("minYear", it.toString()) }
+            state.maxYear?.let { url.appendQueryParameter("maxYear", it.toString()) }
             url.appendQueryParameter("page", page.toString())
             val result = JsExtractor.processLink(url.build().toString()) ?: return LoadResult.Error(Exception("Error al obtener"))
             val list = mutableListOf<DirectoryAV1Min>()

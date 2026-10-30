@@ -206,4 +206,55 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
+    <!-- Menú lateral rediseñado: elementos en píldora y texto un poco más grande -->
+    <style name="DrawerItemShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="DrawerItemText" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">15sp</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+    <!-- Accesos rápidos del encabezado del menú lateral -->
+    <style name="DrawerQuickAction">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="DrawerQuickActionIcon">
+        <item name="android:layout_width">46dp</item>
+        <item name="android:layout_height">46dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:background">@drawable/drawer_quick_circle</item>
+        <item name="tint">@color/colorAccentLight</item>
+    </style>
+
+    <style name="DrawerQuickActionLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+    </style>
+    <!-- Modo AMOLED: se aplica encima del tema en modo oscuro (GenericActivity) -->
+    <style name="AmoledOverlay">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="colorSurface">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <!-- Pestañas seleccionadas (indicador y texto) en blanco -->
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorOnPrimary">@android:color/black</item>
+    </style>
 </resources>

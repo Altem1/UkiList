@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Puntuación de AniList junto al nombre de las portadas (AniListScores) -->
+<resources>
+    <item name="anilist_score_tag" type="id" />
+    <item name="anilist_score_name" type="id" />
+    <color name="anilist_score_good">#4CD98A</color>
+    <color name="anilist_score_mid">#FFC24D</color>
+    <color name="anilist_score_low">#FF7A7A</color>
+</resources>

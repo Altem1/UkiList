@@ -38,7 +38,7 @@ class WaitingAdapter(val fragment: Fragment) : UpdateableAdapter<WaitingAdapter.
         noCrash {
             val item = list[position]
             holder.img.load(item.organizer.imageUrl())
-            holder.title.text = item.organizer.name
+            knf.kuma.anilist.AniListScores.bind(holder.title, item.organizer.aid, item.organizer.slug, item.organizer.name)
             holder.root.onClick { ActivityAnime.open(fragment.activity, item.organizer) }
         }
     }

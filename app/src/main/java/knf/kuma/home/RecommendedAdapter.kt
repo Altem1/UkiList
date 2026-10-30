@@ -38,7 +38,7 @@ class RecommendedAdapter(val activity: Activity) : UpdateableAdapter<Recommended
     override fun onBindViewHolder(holder: RecentViewHolder, position: Int) {
         val item = list[position]
         holder.img.load(item.imageUrl)
-        holder.title.text = item.name
+        knf.kuma.anilist.AniListScores.bind(holder.title, item.aid, item.slug, item.name)
         holder.type?.text = item.type
         holder.root.onClick { ActivityAnime.open(activity, item, holder.img, true, true) }
     }

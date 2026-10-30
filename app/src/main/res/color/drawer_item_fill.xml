@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fondo de píldora de los elementos del menú lateral -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:alpha="0.22" android:color="@color/colorAccent" android:state_checked="true" />
+    <item android:alpha="0.14" android:color="@color/colorAccent" android:state_pressed="true" />
+    <item android:color="@android:color/transparent" />
+</selector>

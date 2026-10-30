@@ -33,6 +33,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import androidx.core.view.isVisible
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import knf.kuma.anilist.AniListSync
+import knf.kuma.cast.CastMedia
+import knf.kuma.commons.CastUtil
+import knf.kuma.commons.roundedString
+import knf.kuma.database.CacheDB
+import knf.kuma.videoservers.FileActions
+import knf.kuma.videoservers.ServersFactory
 import xdroid.toaster.Toaster
 import kotlin.time.Duration.Companion.seconds
 
@@ -57,6 +67,14 @@ class ChaptersFragmentMaterial : BottomFragment(), AnimeChaptersMaterialHolder.C
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // En la ficha hub, al llegar los títulos/sinopsis traducidos se redibujan las tarjetas.
+        (activity as? knf.kuma.animeinfo.hub.AnimeHubActivity)?.let { hub ->
+            // La lista avisa al encabezado de la ficha al desplazarse (si no, al subir el encabezado no regresaba).
+            holder?.recyclerView?.isNestedScrollingEnabled = true
+            viewLifecycleOwner.lifecycleScope.launch {
+                hub.episodeMeta.collect { holder?.recyclerView?.adapter?.notifyDataSetChanged() }
+            }
+        }
         holder?.recyclerView?.apply {
             if (recyclerInitialPadding == null) {
                 recyclerInitialPadding = paddingBottom
@@ -86,11 +104,68 @@ class ChaptersFragmentMaterial : BottomFragment(), AnimeChaptersMaterialHolder.C
                                 }
                             }
                             holder?.setAdapter(this@ChaptersFragmentMaterial, animeObject, chapters)
+                            updatePlayButton()
                             delay(1.seconds)
                             holder?.goToChapter()
                         }
                     }
                 }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (anime != null) updatePlayButton()
+    }
+
+    /** Episodio para continuar: el último visto si quedó a medias; si se terminó (scrobble), el siguiente. */
+    private suspend fun continueTarget(anime: DirectoryAV1): Chapter? = withContext(Dispatchers.IO) {
+        val sorted = anime.chapters.sortedBy { it.number }
+        if (sorted.isEmpty()) return@withContext null
+        val recordsDAO = CacheDB.INSTANCE.recordAV1DAO()
+        val lastSeen = sorted.lastOrNull { recordsDAO.chapterIsSeen(it.eid) } ?: return@withContext sorted.first()
+        val finished = !AniListSync.isScrobbleEnabled ||
+                CacheDB.INSTANCE.aniListScrobbleDAO().episodes(anime.slug).contains(kotlin.math.floor(lastSeen.number).toInt())
+        if (finished) sorted.firstOrNull { it.number > lastSeen.number } ?: lastSeen else lastSeen
+    }
+
+    private fun updatePlayButton() {
+        val fab = view?.findViewById<ExtendedFloatingActionButton>(R.id.play_continue) ?: return
+        // La ficha hub ya tiene su propio botón Reproducir arriba.
+        if (activity is knf.kuma.animeinfo.hub.AnimeHubActivity) {
+            fab.isVisible = false
+            return
+        }
+        val anime = anime ?: return
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            val chapter = continueTarget(anime) ?: return@launch
+            val seenBefore = withContext(Dispatchers.IO) { CacheDB.INSTANCE.recordAV1DAO().chapterIsSeen(chapter.eid) }
+            fab.text = "${if (seenBefore) "Continuar" else "Ver"} EP ${chapter.number.roundedString()}"
+            fab.isVisible = true
+            fab.setOnClickListener { playChapter(anime, chapter) }
+        }
+    }
+
+    fun playChapter(anime: DirectoryAV1, chapter: Chapter) {
+        val markSeen = {
+            lifecycleScope.launch(Dispatchers.IO) { CacheDB.INSTANCE.recordAV1DAO().addChapter(chapter.asRecord(anime)) }
+            chapter.isSeen = true
+            holder?.refresh()
+        }
+        if (chapter.fileWrapper(anime).exist) {
+            markSeen()
+            ServersFactory.startPlay(requireContext(), chapter.episodeName(anime), chapter.fileWrapper(anime).name())
+            return
+        }
+        FileActions.quickStream(this, anime, chapter) { state, extra ->
+            when (state) {
+                FileActions.CallbackState.START_STREAM -> markSeen()
+                FileActions.CallbackState.START_CAST -> {
+                    holder?.recyclerView?.let { CastUtil.get().play(it, CastMedia.create(anime, chapter, extra as? String)) }
+                    markSeen()
+                }
+                else -> {}
             }
         }
     }

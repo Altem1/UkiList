@@ -34,6 +34,23 @@
                 app:hm_viewAllText="Ocultar" />
 
             <knf.kuma.custom.HomeList
+                android:id="@+id/listWatchingUpdated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:hm_isLarge="true"
+                app:hm_subheader="Últimos actualizados (viendo)" />
+
+            <knf.kuma.custom.HomeList
+                android:id="@+id/listLastSeen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hm_isLarge="true"
+                app:hm_showViewAll="true"
+                app:hm_startHidden="true"
+                app:hm_subheader="Últimos vistos" />
+
+            <knf.kuma.custom.HomeList
                 android:id="@+id/listFavUpdated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

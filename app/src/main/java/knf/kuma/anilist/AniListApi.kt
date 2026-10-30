@@ -6,11 +6,11 @@ import org.json.JSONObject
 /** Consultas GraphQL a AniList. Todas son bloqueantes: llamar fuera del hilo principal. */
 object AniListApi {
 
-    data class Media(val id: Int, val titles: List<String>, val episodes: Int?, val cover: String? = null)
+    data class Media(val id: Int, val titles: List<String>, val episodes: Int?, val cover: String? = null, val format: String? = null, val year: Int? = null)
 
     data class Entry(val media: Media, val status: String, val progress: Int)
 
-    private val MEDIA_FIELDS = "id episodes synonyms title { romaji english native } coverImage { medium }"
+    private val MEDIA_FIELDS = "id format startDate { year } episodes synonyms title { romaji english native } coverImage { medium }"
 
     /** Elemento de la lista del usuario para la pantalla AniList (portada, progreso, puntuación). */
     data class ListItem(
@@ -56,7 +56,9 @@ object AniListApi {
         val titles = listOf("romaji", "english", "native").mapNotNull { title.optString(it).takeIf { s -> s.isNotBlank() && s != "null" } } +
                 (optJSONArray("synonyms") ?: JSONArray()).let { arr -> (0 until arr.length()).map { arr.getString(it) } }
         return Media(getInt("id"), titles, if (isNull("episodes")) null else getInt("episodes"),
-            optJSONObject("coverImage")?.optString("medium")?.takeIf { it.isNotBlank() && it != "null" })
+            optJSONObject("coverImage")?.optString("medium")?.takeIf { it.isNotBlank() && it != "null" },
+            optString("format").takeIf { it.isNotBlank() && it != "null" },
+            optJSONObject("startDate")?.optInt("year", 0)?.takeIf { it > 0 })
     }
 
     /** null si falló la conexión; lista vacía si AniList no encontró nada. */
@@ -67,6 +69,27 @@ object AniListApi {
         ) ?: return null
         val arr = data.getJSONObject("Page").getJSONArray("media")
         return (0 until arr.length()).map { arr.getJSONObject(it).toMedia() }
+    }
+
+    /**
+     * Animes de una temporada (WINTER, SPRING, SUMMER, FALL) ordenados por popularidad; los filtros null no se aplican.
+     * Devuelve los resultados y si hay más páginas, o null si falló la conexión.
+     */
+    fun seasonMedia(season: String, year: Int, page: Int, formats: List<String>?, status: String?, genres: List<String>?, tags: List<String>?): Pair<List<Media>, Boolean>? {
+        val vars = JSONObject().put("p", page).put("s", season).put("y", year)
+        formats?.let { vars.put("f", JSONArray(it)) }
+        status?.let { vars.put("st", it) }
+        genres?.takeIf { it.isNotEmpty() }?.let { vars.put("g", JSONArray(it)) }
+        tags?.takeIf { it.isNotEmpty() }?.let { vars.put("t", JSONArray(it)) }
+        val data = AniListAuth.query(
+            "query (\$p: Int, \$s: MediaSeason, \$y: Int, \$f: [MediaFormat], \$st: MediaStatus, \$g: [String], \$t: [String]) { Page(page: \$p, perPage: 50) { pageInfo { hasNextPage } media(type: ANIME, isAdult: false, season: \$s, seasonYear: \$y, format_in: \$f, status: \$st, genre_in: \$g, tag_in: \$t, sort: POPULARITY_DESC) { id format startDate { year } episodes synonyms title { romaji english native } coverImage { large } } } }",
+            vars
+        )?.optJSONObject("Page") ?: return null
+        val arr = data.getJSONArray("media")
+        return (0 until arr.length()).map { i ->
+            arr.getJSONObject(i).let { m -> m.toMedia().copy(cover = m.optJSONObject("coverImage")?.optString("large")?.takeIf { it.isNotBlank() && it != "null" }) }
+        } to
+                (data.optJSONObject("pageInfo")?.optBoolean("hasNextPage") ?: false)
     }
 
     fun userList(userId: Int): List<Entry>? {
@@ -203,5 +226,72 @@ object AniListApi {
                 a.optJSONArray("statuses").stats("status").sortedByDescending { it.count }
             )
         )
+    }
+
+    data class Character(val id: Int, val name: String, val image: String?, val role: String, var isFavourite: Boolean)
+
+    /** Si el anime está en favoritos del usuario y sus personajes (principales primero). */
+    fun mediaFavourites(mediaId: Int): Pair<Boolean, List<Character>>? {
+        val media = AniListAuth.query(
+            "query (\$m: Int) { Media(id: \$m) { isFavourite characters(sort: [ROLE, RELEVANCE], perPage: 25) { edges { role node { id name { userPreferred } image { medium } isFavourite } } } } }",
+            JSONObject().put("m", mediaId)
+        )?.optJSONObject("Media") ?: return null
+        val edges = media.optJSONObject("characters")?.optJSONArray("edges") ?: JSONArray()
+        val characters = (0 until edges.length()).mapNotNull { i ->
+            val e = edges.optJSONObject(i) ?: return@mapNotNull null
+            val n = e.optJSONObject("node") ?: return@mapNotNull null
+            Character(n.optInt("id"), n.optJSONObject("name")?.str("userPreferred") ?: return@mapNotNull null,
+                n.optJSONObject("image")?.str("medium"), e.str("role") ?: "", n.optBoolean("isFavourite"))
+        }
+        return media.optBoolean("isFavourite") to characters
+    }
+
+    fun isFavourite(mediaId: Int): Boolean? = AniListAuth.query(
+        "query (\$m: Int) { Media(id: \$m) { isFavourite } }", JSONObject().put("m", mediaId)
+    )?.optJSONObject("Media")?.optBoolean("isFavourite")
+
+    fun isCharacterFavourite(characterId: Int): Boolean? = AniListAuth.query(
+        "query (\$c: Int) { Character(id: \$c) { isFavourite } }", JSONObject().put("c", characterId)
+    )?.optJSONObject("Character")?.optBoolean("isFavourite")
+
+    /** ToggleFavourite invierte el estado: quien llama debe comprobarlo antes. True si AniList lo aceptó. */
+    fun toggleFavourite(animeId: Int? = null, characterId: Int? = null): Boolean {
+        val vars = JSONObject()
+        animeId?.let { vars.put("a", it) }
+        characterId?.let { vars.put("c", it) }
+        return AniListAuth.query(
+            "mutation (\$a: Int, \$c: Int) { ToggleFavourite(animeId: \$a, characterId: \$c) { anime(perPage: 1) { pageInfo { total } } } }",
+            vars
+        )?.has("ToggleFavourite") == true
+    }
+
+    data class Recommendation(val mediaId: Int, val title: String, val titles: List<String>, val cover: String?, val because: String)
+
+    /** Recomendaciones de AniList a partir de los animes favoritos del usuario, sin lo que ya tiene en su lista. */
+    fun favouriteRecommendations(userId: Int): List<Recommendation>? {
+        val data = AniListAuth.query(
+            "query (\$u: Int) { User(id: \$u) { favourites { anime(perPage: 25) { nodes { title { userPreferred } " +
+                    "recommendations(sort: RATING_DESC, perPage: 6) { nodes { mediaRecommendation { id synonyms title { romaji english native userPreferred } coverImage { large } mediaListEntry { status } } } } } } } } }",
+            JSONObject().put("u", userId)
+        )?.optJSONObject("User") ?: return null
+        val favs = data.optJSONObject("favourites")?.optJSONObject("anime")?.optJSONArray("nodes") ?: JSONArray()
+        val result = linkedMapOf<Int, Recommendation>()
+        for (i in 0 until favs.length()) {
+            val fav = favs.optJSONObject(i) ?: continue
+            val favTitle = fav.optJSONObject("title")?.str("userPreferred") ?: ""
+            val recs = fav.optJSONObject("recommendations")?.optJSONArray("nodes") ?: continue
+            for (j in 0 until recs.length()) {
+                val m = recs.optJSONObject(j)?.optJSONObject("mediaRecommendation") ?: continue
+                if (!m.isNull("mediaListEntry")) continue
+                val id = m.optInt("id")
+                if (id == 0 || result.containsKey(id)) continue
+                val t = m.optJSONObject("title") ?: JSONObject()
+                val titles = listOf("romaji", "english", "native").mapNotNull { t.str(it) } +
+                        (m.optJSONArray("synonyms") ?: JSONArray()).let { arr -> (0 until arr.length()).map { arr.getString(it) } }
+                result[id] = Recommendation(id, t.str("userPreferred") ?: titles.firstOrNull() ?: "", titles,
+                    m.optJSONObject("coverImage")?.str("large"), favTitle)
+            }
+        }
+        return result.values.toList()
     }
 }

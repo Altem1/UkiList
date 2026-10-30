@@ -15,13 +15,27 @@
         android:title="Favoritos"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/action_bottom_profile"
+        android:enabled="true"
+        android:icon="@drawable/ic_bottom_profile"
+        android:title="Perfil"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/action_bottom_directory"
         android:enabled="true"
         android:icon="@drawable/bottom_directory"
         android:title="Directorio"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/action_bottom_emission"
+        android:enabled="true"
+        android:icon="@drawable/ic_emision"
+        android:title="Emisión"
+        app:showAsAction="ifRoom"/>
+    <!-- Configuración se movió al Perfil; se deja oculto porque el código aún lo referencia -->
+    <item
         android:id="@+id/action_bottom_settings"
+        android:visible="false"
         android:enabled="true"
         android:icon="@drawable/bottom_settings"
         android:title="Configuración"

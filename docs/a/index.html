@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abrir en UkiList</title>
+<link rel="icon" href="../assets/logo.png">
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b1026;color:#e8eeff;font-family:system-ui,sans-serif;text-align:center}
+  .card{padding:32px 28px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(124,196,255,.25);max-width:360px}
+  img{width:88px;border-radius:20px}
+  a.btn{display:block;margin-top:14px;padding:14px;border-radius:12px;text-decoration:none;font-weight:600}
+  .open{background:#5b9dff;color:#fff}.get{border:1px solid #7b7bff;color:#cfd8ff}
+</style>
+</head>
+<body>
+<div class="card">
+  <img src="../assets/logo.png" alt="UkiList">
+  <h2 id="t">Abriendo en UkiList…</h2>
+  <p>Si no se abre la app, puede que no la tengas instalada.</p>
+  <a class="btn open" id="open" href="#">Abrir en la app</a>
+  <a class="btn get" href="../">Descargar UkiList</a>
+</div>
+<script>
+  // Enlace compartido desde la ficha del anime: ?s=<slug de animeav1>
+  var s = new URLSearchParams(location.search).get("s") || "";
+  s = s.replace(/[^a-z0-9-]/gi, "");
+  var deep = "ukilist://anime/" + s;
+  document.getElementById("open").href = deep;
+  if (s) {
+    document.getElementById("t").textContent = s.replace(/-/g, " ");
+    location.href = deep;
+  }
+</script>
+</body>
+</html>

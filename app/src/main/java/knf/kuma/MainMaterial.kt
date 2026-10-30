@@ -30,7 +30,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.MaterialDialog
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
+import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigation.NavigationView
@@ -58,6 +58,7 @@ import knf.kuma.commons.noCrash
 import knf.kuma.commons.safeShow
 import knf.kuma.commons.stringLiveData
 import knf.kuma.commons.toast
+import knf.kuma.custom.setFloatingBottomBar
 import knf.kuma.custom.ConnectionState
 import knf.kuma.custom.GenericActivity
 import knf.kuma.database.CacheDB
@@ -90,8 +91,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.sdk27.coroutines.onClick
-import q.rorbin.badgeview.Badge
-import q.rorbin.badgeview.QBadgeView
 import xdroid.toaster.Toaster
 
 class MainMaterial : GenericActivity(),
@@ -111,7 +110,7 @@ class MainMaterial : GenericActivity(),
     private lateinit var badgeEmission: TextView
     private lateinit var badgeSeeing: TextView
     private lateinit var badgeQueue: TextView
-    private var badgeView: Badge? = null
+    private var badgeView: BadgeDrawable? = null
     private var readyToFinish = false
     private var isFirst = true
 
@@ -140,7 +139,9 @@ class MainMaterial : GenericActivity(),
         setNavigationButtons()
         navigationView.setNavigationItemSelectedListener(this)
         bottomNavigationView.setOnItemSelectedListener(this)
+        knf.kuma.anilist.ui.AniListDrawer.bindBottomAvatar(this, bottomNavigationView)
         bottomNavigationView.setOnItemReselectedListener(this)
+        setFloatingBottomBar(bottomNavigationView)
         if (savedInstanceState == null) {
             checkServices()
             startChange()
@@ -185,9 +186,7 @@ class MainMaterial : GenericActivity(),
             badgeEmission = navigationView.menu.findItem(R.id.drawer_emision).actionView as TextView
             badgeSeeing = navigationView.menu.findItem(R.id.drawer_seeing).actionView as TextView
             badgeQueue = navigationView.menu.findItem(R.id.drawer_queue).actionView as TextView
-            knf.kuma.anilist.AniListExceptionsActivity.bindDrawerItem(this@MainMaterial, navigationView.menu.findItem(R.id.drawer_anilist_exceptions))
             knf.kuma.anilist.ui.AniListSyncDialog.observe(this@MainMaterial)
-            navigationView.getHeaderView(0).findViewById<View>(R.id.img).setBackgroundResource(EAHelper.getThemeImg())
             val header = navigationView.getHeaderView(0).findViewById<View>(R.id.img)
             ViewCompat.setOnApplyWindowInsetsListener(header) { v, insets ->
                 v.apply {
@@ -216,7 +215,7 @@ class MainMaterial : GenericActivity(),
             actionMap.onClick { EAMapActivity.start(this@MainMaterial) }
             actionMap.visibility = if (EAHelper.phase == 3) View.VISIBLE else View.GONE
             knf.kuma.anilist.ui.AniListDrawer.bind(this@MainMaterial, navigationView.getHeaderView(0)) {
-                bottomNavigationView.selectedItemId = R.id.action_bottom_settings
+                knf.kuma.preferences.SettingsActivity.open(this@MainMaterial)
             }
             subscribeBadges()
         }
@@ -224,39 +223,36 @@ class MainMaterial : GenericActivity(),
 
     private fun subscribeBadges() {
         try {
-            val bottomNavigationMenuView = bottomNavigationView.getChildAt(0) as BottomNavigationMenuView
-            val v = bottomNavigationMenuView.getChildAt(1)
             if (badgeView == null) {
-                badgeView = QBadgeView(this)
-                        .bindTarget(v)
-                        .setExactMode(true)
-                        .setShowShadow(false)
-                        .setGravityOffset(5f, 5f, true)
-                        .setBadgeBackgroundColor(ContextCompat.getColor(this, EAHelper.getThemeColorLight()))
+                badgeView = bottomNavigationView.getOrCreateBadge(R.id.action_bottom_favorites).apply {
+                    backgroundColor = ContextCompat.getColor(this@MainMaterial, EAHelper.getThemeColorLight())
+                    isVisible = false
+                }
                 lifecycleScope.launch {
                     CacheDB.INSTANCE.favoriteAV1DAO().countFlow.collectLatest {
                         if (badgeView != null)
                             if (PrefsUtil.showFavIndicator)
-                                badgeView?.badgeNumber = it
+                                badgeView?.setCount(it)
                             else
-                                badgeView?.hide(false)
+                                badgeView?.isVisible = false
                     }
                 }
                 PrefsUtil.getLiveShowFavIndicator().observe(this, Observer { aBoolean ->
                     if (badgeView != null) {
                         if (aBoolean)
-                            lifecycleScope.launch { badgeView?.badgeNumber = withContext(Dispatchers.IO) { CacheDB.INSTANCE.favoriteAV1DAO().count } }
+                            lifecycleScope.launch { badgeView?.setCount(withContext(Dispatchers.IO) { CacheDB.INSTANCE.favoriteAV1DAO().count }) }
                         else
-                            badgeView?.hide(false)
+                            badgeView?.isVisible = false
                     }
                 })
                 PreferenceManager.getDefaultSharedPreferences(this).stringLiveData("theme_color", "0")
                         .observe(this, Observer {
-                            (badgeView as? QBadgeView)?.badgeBackgroundColor = ContextCompat.getColor(this, EAHelper.getThemeColorLight(it))
+                            badgeView?.backgroundColor = ContextCompat.getColor(this, EAHelper.getThemeColorLight(it))
                             badgeEmission.setTextColor(ContextCompat.getColor(this, EAHelper.getThemeColor(it)))
                             badgeSeeing.setTextColor(ContextCompat.getColor(this, EAHelper.getThemeColor(it)))
                             badgeQueue.setTextColor(ContextCompat.getColor(this, EAHelper.getThemeColor(it)))
-                            navigationView.getHeaderView(0).findViewById<View>(R.id.img).setBackgroundResource(EAHelper.getThemeImg(it))
+                            // Este LiveData reemite en cada onStart: no pisar la portada de AniList con el degradado.
+                            knf.kuma.anilist.ui.AniListDrawer.refreshBanner(this@MainMaterial, navigationView.getHeaderView(0))
                         })
             }
             badgeEmission.setTextColor(ContextCompat.getColor(this, EAHelper.getThemeColor()))
@@ -426,6 +422,7 @@ class MainMaterial : GenericActivity(),
                 PrefsUtil.dirOrder = 0
                 changeOrder()
             }
+            R.id.action_advanced_search -> knf.kuma.search.AdvancedSearchActivity.open(this)
             R.id.by_votes -> {
                 PrefsUtil.dirOrder = 1
                 changeOrder()
@@ -442,6 +439,11 @@ class MainMaterial : GenericActivity(),
         return super.onOptionsItemSelected(item)
     }
 
+    /** Desde "Para ti" (pestaña del corazón con AniList): la lista local de favoritos de siempre. */
+    fun showLocalFavorites() {
+        setFragment(FavoriteFragment.get())
+    }
+
     private fun changeOrder() {
         invalidateOptionsMenu()
     }
@@ -449,8 +451,15 @@ class MainMaterial : GenericActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_bottom_recents -> setFragment(RecentModelsFragment.get())
-            R.id.action_bottom_favorites -> setFragment(FavoriteFragment.get())
+            // Perfil abre su propia pantalla; la pestaña seleccionada no cambia.
+            R.id.action_bottom_profile -> {
+                knf.kuma.profile.ProfileActivity.open(this)
+                return false
+            }
+            R.id.action_bottom_favorites -> setFragment(
+                if (knf.kuma.anilist.AniListAuth.isLoggedIn) knf.kuma.anilist.ui.AniListForYouFragment() else FavoriteFragment.get())
             R.id.action_bottom_directory -> setFragment(DirectoryFragmentMaterial.get())
+            R.id.action_bottom_emission -> setFragment(knf.kuma.emision.EmissionBottomFragment())
             R.id.action_bottom_settings -> setFragment(BottomPreferencesMaterialFragment.get())
             R.id.drawer_explorer -> ExplorerActivityMaterial.open(this)
             R.id.drawer_emision -> EmissionActivityMaterial.open(this)
@@ -501,8 +510,9 @@ class MainMaterial : GenericActivity(),
     private fun returnSelectFragment() {
         if (selectedFragment != null) {
             when (selectedFragment) {
-                is FavoriteFragment -> bottomNavigationView.selectedItemId = R.id.action_bottom_favorites
+                is FavoriteFragment, is knf.kuma.anilist.ui.AniListForYouFragment -> bottomNavigationView.selectedItemId = R.id.action_bottom_favorites
                 is DirectoryFragmentMaterial -> bottomNavigationView.selectedItemId = R.id.action_bottom_directory
+                is knf.kuma.emision.EmissionBottomFragment -> bottomNavigationView.selectedItemId = R.id.action_bottom_emission
                 is BottomPreferencesFragment -> bottomNavigationView.selectedItemId = R.id.action_bottom_settings
                 else -> bottomNavigationView.selectedItemId = R.id.action_bottom_recents
             }
@@ -515,7 +525,10 @@ class MainMaterial : GenericActivity(),
             0 -> setFragment(RecentModelsFragment.get())
             1 -> bottomNavigationView.selectedItemId = R.id.action_bottom_favorites
             2 -> bottomNavigationView.selectedItemId = R.id.action_bottom_directory
-            3 -> bottomNavigationView.selectedItemId = R.id.action_bottom_settings
+            3 -> {
+                setFragment(RecentModelsFragment.get())
+                knf.kuma.preferences.SettingsActivity.open(this)
+            }
             else -> setFragment(RecentModelsFragment.get())
         }
     }
@@ -525,6 +538,7 @@ class MainMaterial : GenericActivity(),
             when (selectedFragment) {
                 is FavoriteFragment -> bottomNavigationView.selectedItemId = R.id.action_bottom_recents
                 is DirectoryFragmentMaterial -> bottomNavigationView.selectedItemId = R.id.action_bottom_directory
+                is knf.kuma.emision.EmissionBottomFragment -> bottomNavigationView.selectedItemId = R.id.action_bottom_emission
                 is BottomPreferencesFragment -> bottomNavigationView.selectedItemId = R.id.action_bottom_settings
                 else -> bottomNavigationView.selectedItemId = R.id.action_bottom_recents
             }
@@ -605,4 +619,9 @@ class MainMaterial : GenericActivity(),
     override fun getSnackbarAnchor(): View {
         return root
     }
+}
+
+private fun BadgeDrawable.setCount(count: Int) {
+    number = count
+    isVisible = count > 0
 }

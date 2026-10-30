@@ -60,10 +60,15 @@
                 android:layout_weight="1"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/separator_size"
-                android:background="@color/separator" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bottomGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
 
             <knf.kuma.custom.ConnectionState
                 android:id="@+id/connectionState"
@@ -76,6 +81,7 @@
                 android:id="@+id/bottomNavigation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:elevation="0dp"
                 app:elevation="0dp"
                 app:menu="@menu/bottom_menu" />
 
@@ -90,7 +96,18 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        app:drawerLayoutCornerSize="24dp"
         app:headerLayout="@layout/nav_header_main_material"
+        app:itemHorizontalPadding="18dp"
+        app:itemIconPadding="20dp"
+        app:itemIconTint="@color/colorAccentLight"
+        app:itemShapeAppearanceOverlay="@style/DrawerItemShape"
+        app:itemShapeFillColor="@color/drawer_item_fill"
+        app:itemShapeInsetEnd="12dp"
+        app:itemShapeInsetStart="12dp"
+        app:itemTextAppearance="@style/DrawerItemText"
+        app:itemVerticalPadding="14dp"
+        app:subheaderColor="@color/colorAccentLight"
         app:menu="@menu/activity_main_drawer_drawer"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

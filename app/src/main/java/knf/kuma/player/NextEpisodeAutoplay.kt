@@ -53,21 +53,63 @@ class NextEpisodeAutoplay(
         next = scope.async { runCatching { NextEpisodeResolver.findNext(slug!!, number) }.getOrNull() }
     }
 
+    /** Video que se resuelve durante el ending, para que al pasar al siguiente ya esté listo. */
+    private var pending: Pair<NextEpisodeResolver.Next, Deferred<NextEpisodeResolver.Resolved?>>? = null
+    /** El usuario eligió "Seguir viendo" en el ending: no se vuelve a encoger hasta que termine. */
+    private var endingDismissed = false
+
+    private suspend fun resolveNext(): Pair<NextEpisodeResolver.Next, Deferred<NextEpisodeResolver.Resolved?>>? {
+        pending?.let { return it }
+        prefetch()
+        val n = next?.await() ?: return null
+        val resolved = scope.async {
+            NextEpisodeResolver.resolve(activity, n, intent.getStringExtra("server_name"), intent.getIntExtra("server_lang", 0))
+        }
+        return (n to resolved).also { pending = it }
+    }
+
     /** Llamar al terminar el video; si no hay siguiente episodio ejecuta [onFinish]. */
     fun onEnded(onFinish: () -> Unit) {
         if (!isAvailable) { onFinish(); return }
-        prefetch()
         scope.launch {
-            val n = next?.await()
-            if (n == null || activity.isFinishing) { onFinish(); return@launch }
-            val resolved = async {
-                NextEpisodeResolver.resolve(activity, n, intent.getStringExtra("server_name"), intent.getIntExtra("server_lang", 0))
-            }
-            show(n, resolved, onFinish)
+            val (n, resolved) = resolveNext() ?: run { onFinish(); return@launch }
+            if (activity.isFinishing) { onFinish(); return@launch }
+            // Si ya estaba la miniventana del ending, solo arranca la cuenta regresiva en ella.
+            val view = overlay ?: show(n)
+            startCountdown(view, n, resolved, onFinish)
         }
     }
 
-    private fun show(n: NextEpisodeResolver.Next, resolved: Deferred<NextEpisodeResolver.Resolved?>, onFinish: () -> Unit) {
+    /** Empezó el ending (AniSkip): el video se encoge pero sigue reproduciéndose; el usuario elige. */
+    fun onEndingStarted() {
+        if (!isAvailable || overlay != null || launched || endingDismissed) return
+        scope.launch {
+            val (n, resolved) = resolveNext() ?: return@launch
+            if (activity.isFinishing || overlay != null) return@launch
+            val view = show(n)
+            view.findViewById<View>(R.id.next_progress).visibility = View.GONE
+            view.findViewById<TextView>(R.id.next_countdown).text = activity.getString(R.string.next_episode_ending)
+            view.findViewById<TextView>(R.id.next_cancel).text = activity.getString(R.string.next_episode_keep_watching)
+            view.findViewById<View>(R.id.next_play).setOnClickListener { start(n, resolved) { removeOverlay() } }
+            view.findViewById<View>(R.id.next_cancel).setOnClickListener {
+                endingDismissed = true
+                removeOverlay()
+            }
+        }
+    }
+
+    /** Botón "Siguiente episodio": pasa ya, sin cuenta regresiva. */
+    fun playNow() {
+        if (!isAvailable) { activity.getString(R.string.next_episode_none).toast(); return }
+        if (launched) return
+        scope.launch {
+            val (n, resolved) = resolveNext() ?: run { activity.getString(R.string.next_episode_none).toast(); return@launch }
+            if (overlay == null) show(n)
+            start(n, resolved) { removeOverlay() }
+        }
+    }
+
+    private fun show(n: NextEpisodeResolver.Next): View {
         val view = LayoutInflater.from(activity).inflate(R.layout.next_episode_overlay, root, false)
         root.addView(view)
         overlay = view
@@ -76,8 +118,14 @@ class NextEpisodeAutoplay(
         val wid = n.chapter.withID(n.anime)
         view.findViewById<TextView>(R.id.next_title).text = activity.getString(R.string.next_episode_title, n.anime.name, n.chapter.number.roundedString())
         runCatching { view.findViewById<ImageView>(R.id.next_thumb).load(wid.thumbnail) }
+        return view
+    }
+
+    private fun startCountdown(view: View, n: NextEpisodeResolver.Next, resolved: Deferred<NextEpisodeResolver.Resolved?>, onFinish: () -> Unit) {
         val countdown = view.findViewById<TextView>(R.id.next_countdown)
         val progress = view.findViewById<ProgressBar>(R.id.next_progress)
+        progress.visibility = View.VISIBLE
+        view.findViewById<TextView>(R.id.next_cancel).text = activity.getString(R.string.next_episode_cancel)
         val play = { timer?.cancel(); start(n, resolved, onFinish) }
         view.findViewById<View>(R.id.next_cancel).setOnClickListener {
             timer?.cancel()
@@ -85,6 +133,7 @@ class NextEpisodeAutoplay(
             onFinish()
         }
         view.findViewById<View>(R.id.next_play).setOnClickListener { play() }
+        timer?.cancel()
         timer = object : CountDownTimer(COUNTDOWN, 100) {
             override fun onTick(left: Long) {
                 countdown.text = activity.getString(R.string.next_episode_countdown, ((left + 999) / 1000).toInt())
@@ -104,6 +153,8 @@ class NextEpisodeAutoplay(
             // Si salió mientras se buscaba servidor, no se reabre el reproductor.
             if (activity.isFinishing || activity.isDestroyed) return@launch
             if (r == null) {
+                launched = false
+                pending = null
                 activity.getString(R.string.next_episode_not_found).toast()
                 onFinish()
                 return@launch

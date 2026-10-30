@@ -131,6 +131,7 @@
   .slide p { color: var(--muted); font-size: 15px; }
   .slide .shot { height: 380px; border-radius: 16px; background: rgba(0,0,0,.3); display: grid; place-items: center; overflow: hidden; margin-bottom: 6px; }
   .slide .shot img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 12px; }
+  .slide.wide { flex-basis: calc((100% - 36px) / 3 * 2 + 18px); }
   .slide.wide .shot img { width: 100%; height: auto; }
   .slide .mock { margin-top: auto; padding: 12px 14px; border-radius: 14px; background: rgba(0,0,0,.25); font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
   .slide .mock b { color: var(--text); font-weight: 600; }
@@ -140,7 +141,7 @@
   .dots { display: flex; gap: 8px; }
   .dots button { width: 9px; height: 9px; border-radius: 99px; border: none; padding: 0; cursor: pointer; background: rgba(255,255,255,.25); transition: width .25s, background .25s; }
   .dots button.on { width: 26px; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
-  @media (max-width: 820px) { .slide { flex-basis: 86%; } }
+  @media (max-width: 820px) { .slide, .slide.wide { flex-basis: 86%; } .slide.wide .shot { height: auto; aspect-ratio: 16 / 9; } }
 
   footer { padding: 40px 0 60px; color: var(--muted); font-size: 14px; text-align: center; }
   footer a { color: var(--text); }
@@ -199,14 +200,19 @@
     <p class="sub">Lo que UkiList agrega sobre UKIKU.</p>
     <div class="carousel">
       <div class="track" id="track">
+        <div class="glass slide"><div class="shot"><img src="assets/shots/ficha.webp" alt="Nueva ficha de anime" loading="lazy"></div><span class="tag">Nuevo</span><h3>Nueva ficha de anime</h3><p>Portada que pasa al tráiler, botón Continuar con el episodio que te falta, descarga y la info de AniList: temporada, estado y estudio.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/episodios-hub.webp" alt="Episodios con título y sinopsis" loading="lazy"></div><span class="tag">Episodios</span><h3>Títulos y sinopsis en español</h3><p>Cada episodio con miniatura, título y sinopsis traducidos, descarga y nube de sincronización. Tocas la tarjeta y se reproduce.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/openings.webp" alt="Openings, endings y personajes" loading="lazy"></div><span class="tag">Detalles</span><h3>Openings y endings</h3><p>Canción, artista y enlaces a YouTube, Spotify y Apple Music, además de puntuación, director, doblajes y personajes.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/inicio-viendo.webp" alt="Inicio con lo que estás viendo" loading="lazy"></div><span class="tag">Inicio</span><h3>Lo que estás viendo, al frente</h3><p>Tus animes en emisión con la próxima fecha y la puntuación de AniList, y el % junto a cada portada.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/perfil-tab.webp" alt="Pantalla de perfil" loading="lazy"></div><span class="tag">Perfil</span><h3>Tu perfil en la barra inferior</h3><p>Portada y foto de AniList, tu lista, tus descargas y tu historial en un solo lugar.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/emision.webp" alt="Emisión en la barra inferior" loading="lazy"></div><span class="tag">Emisión</span><h3>Emisión a un toque</h3><p>El horario de la semana desde la barra inferior, con el % de AniList en cada anime.</p></div>
         <div class="glass slide"><div class="shot"><img src="assets/shots/sync.webp" alt="Ventana de sincronización" loading="lazy"></div><span class="tag">AniList</span><h3>Ventana de sincronización</h3><p>Carátula del anime en curso, barra de avance y contador de lo que se sincronizó y lo que no.</p></div>
         <div class="glass slide wide"><div class="shot"><img src="assets/shots/autoplay.webp" alt="Autoplay estilo Netflix" loading="lazy"></div><span class="tag">Reproductor</span><h3>Autoplay estilo Netflix</h3><p>Al terminar, el episodio se encoge y aparece el siguiente con cuenta regresiva. Si el servidor no lo tiene, prueba con los demás.</p></div>
         <div class="glass slide"><div class="shot"><img src="assets/shots/episodios.webp" alt="Nube de sincronización" loading="lazy"></div><span class="tag">Episodios</span><h3>Nube de sincronización</h3><p>Los vistos se marcan solos desde tu progreso en AniList, y la nube indica cuáles ya están subidos.</p></div>
         <div class="glass slide"><div class="shot"><img src="assets/shots/lista.webp" alt="Tu lista dentro de la app" loading="lazy"></div><span class="tag">AniList</span><h3>Tu lista dentro de la app</h3><p>Viendo, pendientes, completados e historial de AniList, con tu progreso en cada anime.</p></div>
         <div class="glass slide"><div class="shot"><img src="assets/shots/estadisticas.webp" alt="Estadísticas" loading="lazy"></div><span class="tag">Perfil</span><h3>Estadísticas</h3><p>Animes, episodios, días vistos, puntuaciones y géneros más vistos.</p></div>
         <div class="glass slide"><div class="shot"><img src="assets/shots/perfil.webp" alt="Perfil y medallas" loading="lazy"></div><span class="tag">Perfil</span><h3>Perfil y medallas</h3><p>Tu perfil de AniList, medallas por lo que has visto y logros de la app.</p></div>
-        <div class="glass slide"><div class="shot"><img src="assets/shots/menu.webp" alt="Tu portada de AniList" loading="lazy"></div><span class="tag">Menú lateral</span><h3>Tu portada de AniList</h3><p>El menú lateral muestra tu avatar y la portada de tu perfil, y lo que falle al subir aparece ahí para reintentarlo.</p></div>
-        <div class="glass slide"><div class="shot"><img src="assets/shots/inicio.webp" alt="Todo lo de UKIKU" loading="lazy"></div><span class="tag">Inicio</span><h3>Todo lo de UKIKU</h3><p>Recientes, emisión, catálogo y descargas, con el nuevo color azul.</p></div>
+        <div class="glass slide"><div class="shot"><img src="assets/shots/menu-nuevo.webp" alt="Menú lateral nuevo" loading="lazy"></div><span class="tag">Menú lateral</span><h3>Menú lateral renovado</h3><p>Tarjeta con tu portada, foto y nombre de AniList, y accesos rápidos a compartir, logros y sincronización.</p></div>
       </div>
       <div class="car-controls">
         <button class="car-btn" id="prev" aria-label="Anterior">‹</button>

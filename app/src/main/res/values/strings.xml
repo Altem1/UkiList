@@ -333,6 +333,11 @@
     <string name="next_episode_searching">Buscando servidor...</string>
     <string name="next_episode_not_found">No se encontró el siguiente episodio en ningún servidor</string>
     <string name="next_episode_cancel">Cancelar</string>
+    <string name="next_episode_ending">Ending · sigue reproduciéndose</string>
+    <string name="next_episode_keep_watching">Seguir viendo</string>
+    <string name="next_episode_none">No hay siguiente episodio</string>
+    <string name="skip_opening">Saltar opening</string>
+    <string name="skip_recap">Saltar resumen</string>
     <string name="next_episode_play">▶  Ver ahora</string>
     <string name="anilist_unscrobble_planning">AniList: %s vuelto a Planeado</string>
     <string name="anilist_unscrobble_progress">AniList: %1$s, progreso bajado a episodio %2$d</string>

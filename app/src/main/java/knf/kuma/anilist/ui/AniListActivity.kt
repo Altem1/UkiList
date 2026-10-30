@@ -8,10 +8,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -20,18 +24,77 @@ import com.google.android.material.tabs.TabLayout
 import knf.kuma.R
 import knf.kuma.anilist.AniListApi
 import knf.kuma.anilist.AniListAuth
-import knf.kuma.anilist.AniListMatcher
-import com.afollestad.materialdialogs.list.listItems
 import knf.kuma.commons.EAHelper
-import knf.kuma.commons.toast
-import knf.kuma.database.CacheDB
 import knf.kuma.custom.GenericActivity
+import knf.kuma.database.CacheDB
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Sección AniList tipo AniHyou: historial y listas del usuario. */
+/** Sección AniList tipo AniHyou como pantalla propia (menú lateral). El contenido vive en [AniListListFragment]. */
 class AniListActivity : GenericActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(EAHelper.getTheme())
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_anilist_host)
+        setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val single = intent.getBooleanExtra(EXTRA_SINGLE, false)
+        val tab = intent.getIntExtra(EXTRA_TAB, 1)
+        title = when {
+            !single -> AniListAuth.userName.value?.let { "AniList · $it" } ?: "AniList"
+            tab == listTabCount -> getString(R.string.anilist_tab_stats)
+            else -> getString(R.string.anilist_tab_profile)
+        }
+        if (savedInstanceState == null)
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.container, AniListListFragment.create(tab, single))
+                .commit()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menu.add(0, 1, 0, "Perfil")
+        menu.add(0, 2, 0, "Estadísticas")
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val user = AniListAuth.userName.value ?: ""
+        when (item.itemId) {
+            android.R.id.home -> finish()
+            1 -> AniListDrawer.openUrl(this, "https://anilist.co/user/$user/")
+            2 -> AniListDrawer.openUrl(this, "https://anilist.co/user/$user/stats/anime/overview")
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
+    }
+
+    companion object {
+        internal const val EXTRA_TAB = "tab"
+        const val TAB_HISTORY = 0
+        const val TAB_PLANNING = 2
+
+        internal const val EXTRA_SINGLE = "single"
+        internal const val listTabCount = 7 // tamaño de las pestañas de listas
+
+        fun open(context: Context, tab: Int = 1) {
+            context.startActivity(Intent(context, AniListActivity::class.java).putExtra(EXTRA_TAB, tab))
+        }
+
+        /** [stats] true abre Estadísticas, false abre Perfil. */
+        fun openSingle(context: Context, stats: Boolean) {
+            val tab = listTabCount + if (stats) 0 else 1
+            context.startActivity(Intent(context, AniListActivity::class.java).putExtra(EXTRA_TAB, tab).putExtra(EXTRA_SINGLE, true))
+        }
+    }
+}
+
+/**
+ * Historial y listas del usuario de AniList (+ Estadísticas y Perfil). Se usa en [AniListActivity] y como
+ * pestaña de la pantalla de perfil. Con "single" se oculta la barra de pestañas y muestra solo una sección.
+ */
+class AniListListFragment : Fragment() {
 
     private val tabs = listOf(
         "Historial" to null, "Viendo" to "CURRENT", "Pendientes" to "PLANNING",
@@ -47,31 +110,27 @@ class AniListActivity : GenericActivity() {
     private var profile: AniListApi.UserProfile? = null
     private var profileLoading = false
     private val statsTab get() = tabs.size
-    private val profileTab get() = tabs.size + 1
+    private val host get() = requireActivity() as AppCompatActivity
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(EAHelper.getTheme())
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_anilist)
-        setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = AniListAuth.userName.value?.let { "AniList · $it" } ?: "AniList"
-        refresh = findViewById(R.id.refresh)
-        empty = findViewById(R.id.empty)
-        tabLayout = findViewById(R.id.tabs)
-        findViewById<RecyclerView>(R.id.recycler).adapter = adapter
-        statsScroll = findViewById(R.id.stats_scroll)
-        renderer = AniListStatsRenderer(this, findViewById(R.id.stats_container))
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.activity_anilist, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // La barra de título la pone quien contiene al fragmento.
+        view.findViewById<Toolbar>(R.id.toolbar).visibility = View.GONE
+        refresh = view.findViewById(R.id.refresh)
+        empty = view.findViewById(R.id.empty)
+        tabLayout = view.findViewById(R.id.tabs)
+        view.findViewById<RecyclerView>(R.id.recycler).adapter = adapter
+        statsScroll = view.findViewById(R.id.stats_scroll)
+        renderer = AniListStatsRenderer(host, view.findViewById(R.id.stats_container)) { openFavourite(it) }
         tabs.forEach { tabLayout.addTab(tabLayout.newTab().setText(it.first)) }
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.anilist_tab_stats))
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.anilist_tab_profile))
         // Estadísticas y Perfil son entradas propias del menú lateral: se abren solas, sin la barra de pestañas.
-        val single = intent.getBooleanExtra(EXTRA_SINGLE, false)
-        if (single) {
-            tabLayout.addTab(tabLayout.newTab().setText(R.string.anilist_tab_stats))
-            tabLayout.addTab(tabLayout.newTab().setText(R.string.anilist_tab_profile))
-            tabLayout.visibility = View.GONE
-        }
-        tabLayout.getTabAt((savedInstanceState?.getInt(EXTRA_TAB) ?: intent.getIntExtra(EXTRA_TAB, 1)).coerceIn(0, tabLayout.tabCount - 1))?.select()
-        if (single) title = getString(if (tabLayout.selectedTabPosition == statsTab) R.string.anilist_tab_stats else R.string.anilist_tab_profile)
+        if (arguments?.getBoolean(AniListActivity.EXTRA_SINGLE) == true) tabLayout.visibility = View.GONE
+        val start = savedInstanceState?.getInt(AniListActivity.EXTRA_TAB) ?: arguments?.getInt(AniListActivity.EXTRA_TAB, 1) ?: 1
+        tabLayout.getTabAt(start.coerceIn(0, tabLayout.tabCount - 1))?.select()
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) = filter()
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -84,7 +143,7 @@ class AniListActivity : GenericActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(EXTRA_TAB, tabLayout.selectedTabPosition.coerceAtLeast(0))
+        if (::tabLayout.isInitialized) outState.putInt(AniListActivity.EXTRA_TAB, tabLayout.selectedTabPosition.coerceAtLeast(0))
     }
 
     private fun load() {
@@ -95,7 +154,7 @@ class AniListActivity : GenericActivity() {
             return
         }
         refresh.isRefreshing = true
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val list = withContext(Dispatchers.IO) { runCatching { AniListApi.userListDetailed(AniListAuth.userId) }.getOrNull() }
             refresh.isRefreshing = false
             if (list == null) {
@@ -139,7 +198,7 @@ class AniListActivity : GenericActivity() {
         renderer.showMessage(getString(R.string.anilist_loading))
         if (profileLoading) return
         profileLoading = true
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) { runCatching { AniListApi.userProfile(AniListAuth.userId) }.getOrNull() }
             profileLoading = false
             profile = result
@@ -150,29 +209,12 @@ class AniListActivity : GenericActivity() {
     }
 
     /** Favorito: abre la ficha en la app si hay mapeo; si no, la web de AniList. */
-    fun openFavourite(fav: AniListApi.FavouriteAnime) {
+    private fun openFavourite(fav: AniListApi.FavouriteAnime) {
         lifecycleScope.launch {
             val mapping = withContext(Dispatchers.IO) { runCatching { CacheDB.INSTANCE.aniListMappingDAO().byAniList(fav.mediaId) }.getOrNull() }
-            if (mapping == null) AniListDrawer.openUrl(this@AniListActivity, "https://anilist.co/anime/${fav.mediaId}/")
-            else knf.kuma.animeinfo.ActivityAnimeMaterial.open(this@AniListActivity, "https://animeav1.com/media/${mapping.slug}")
+            if (mapping == null) AniListDrawer.openUrl(host, "https://anilist.co/anime/${fav.mediaId}/")
+            else knf.kuma.animeinfo.ActivityAnimeMaterial.open(host, "https://animeav1.com/media/${mapping.slug}")
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, 1, 0, "Perfil")
-        menu.add(0, 2, 0, "Estadísticas")
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val user = AniListAuth.userName.value ?: ""
-        when (item.itemId) {
-            android.R.id.home -> finish()
-            1 -> AniListDrawer.openUrl(this, "https://anilist.co/user/$user/")
-            2 -> AniListDrawer.openUrl(this, "https://anilist.co/user/$user/stats/anime/overview")
-            else -> return super.onOptionsItemSelected(item)
-        }
-        return true
     }
 
     private inner class Adapter : RecyclerView.Adapter<Adapter.Holder>() {
@@ -202,67 +244,22 @@ class AniListActivity : GenericActivity() {
             holder.title.text = item.title
             val total = item.episodes?.toString() ?: "?"
             val score = if (item.score > 0) " · {star} ${item.score}" else ""
-            holder.text.text = iconText("Ep. ${item.progress}/$total$score", mapOf("star" to R.drawable.ic_score_star), 12f, holder.text.currentTextColor)
+            holder.text.text = holder.itemView.context.iconText("Ep. ${item.progress}/$total$score", mapOf("star" to R.drawable.ic_score_star), 12f, holder.text.currentTextColor)
             holder.bar.max = item.episodes ?: maxOf(item.progress, 1)
             holder.bar.progress = item.progress
             Glide.with(holder.cover).load(item.cover).into(holder.cover)
             holder.openWeb.setOnClickListener {
-                AniListDrawer.openUrl(this@AniListActivity, "https://anilist.co/anime/${item.mediaId}/")
+                AniListDrawer.openUrl(host, "https://anilist.co/anime/${item.mediaId}/")
             }
-            val openAnime = View.OnClickListener { openInApp(item) }
+            val openAnime = View.OnClickListener { AniListOpener.open(host, AniListApi.Media(item.mediaId, listOf(item.title), item.episodes)) }
             holder.openAnime.setOnClickListener(openAnime)
             holder.itemView.setOnClickListener(openAnime)
         }
     }
 
-    /** Abre la ficha del anime en la app para seguir viendo; la relación sale del mapeo AniList ↔ catálogo. */
-    private fun openInApp(item: AniListApi.ListItem) {
-        lifecycleScope.launch {
-            val mapping = withContext(Dispatchers.IO) {
-                CacheDB.INSTANCE.aniListMappingDAO().byAniList(item.mediaId)
-                    ?: runCatching { AniListMatcher.findAppAnime(AniListApi.Media(item.mediaId, listOf(item.title), item.episodes)) }.getOrNull()
-            }
-            if (mapping != null) return@launch openSlug(mapping.slug)
-            // Sin coincidencia exacta: se busca en el catálogo y, si hay duda, elige el usuario (y se recuerda).
-            val candidates = withContext(Dispatchers.IO) { AniListMatcher.catalogCandidates(item.title) }.take(8)
-            when (candidates.size) {
-                0 -> {
-                    getString(R.string.anilist_not_in_catalog, item.title).toast()
-                    AniListDrawer.openUrl(this@AniListActivity, "https://anilist.co/anime/${item.mediaId}/")
-                }
-                1 -> pick(item, candidates[0])
-                else -> com.afollestad.materialdialogs.MaterialDialog(this@AniListActivity).show {
-                    title(R.string.anilist_pick_anime)
-                    listItems(items = candidates.map { it.name }) { _, index, _ -> pick(item, candidates[index]) }
-                }
-            }
-        }
-    }
-
-    private fun pick(item: AniListApi.ListItem, anime: knf.kuma.pojos.av1.DirectoryAV1Min) {
-        lifecycleScope.launch(Dispatchers.IO) { AniListMatcher.saveMapping(anime.aid, anime.slug, item.mediaId) }
-        openSlug(anime.slug)
-    }
-
-    private fun openSlug(slug: String) =
-        knf.kuma.animeinfo.ActivityAnimeMaterial.open(this, "https://animeav1.com/media/$slug")
-
     companion object {
-        private const val EXTRA_TAB = "tab"
-        const val TAB_HISTORY = 0
-        const val TAB_PLANNING = 2
-
-        private const val EXTRA_SINGLE = "single"
-        private const val listTabCount = 7 // tamaño de [tabs]
-
-        fun open(context: Context, tab: Int = 1) {
-            context.startActivity(Intent(context, AniListActivity::class.java).putExtra(EXTRA_TAB, tab))
-        }
-
-        /** [stats] true abre Estadísticas, false abre Perfil. */
-        fun openSingle(context: Context, stats: Boolean) {
-            val tab = listTabCount + if (stats) 0 else 1
-            context.startActivity(Intent(context, AniListActivity::class.java).putExtra(EXTRA_TAB, tab).putExtra(EXTRA_SINGLE, true))
+        fun create(tab: Int = 1, single: Boolean = false) = AniListListFragment().apply {
+            arguments = bundleOf(AniListActivity.EXTRA_TAB to tab, AniListActivity.EXTRA_SINGLE to single)
         }
     }
 }
